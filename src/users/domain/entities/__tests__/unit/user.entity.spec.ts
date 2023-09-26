@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '@/users/infrastructure/users.service';
 import { UsersModule } from '@/users/infrastructure/users.module';
-import { faker } from '@faker-js/faker';
+import { UserDataBuilder } from '../helpers/user-data-builder';
 import { UserEntity, UserProps } from '../../user.entity';
 
 describe('UserEntity unit tests', () => {
@@ -10,11 +10,7 @@ describe('UserEntity unit tests', () => {
     let entity: UserEntity;
 
     beforeEach(() => {
-        props = {
-            name: faker.person.fullName(),
-            email: faker.internet.email(),
-            password: faker.internet.password(),
-        }
+        props = UserDataBuilder({});
 
         entity = new UserEntity(props);
     });

@@ -5,7 +5,7 @@ import { UserDataBuilder } from '../helpers/user-data-builder';
 import { UserEntity, UserProps } from '../../user.entity';
 
 describe('UserEntity unit tests', () => {
-    // let service: UsersService;
+    let service: UsersService;
     let props: UserProps;
     let entity: UserEntity;
 
@@ -15,24 +15,29 @@ describe('UserEntity unit tests', () => {
         entity = new UserEntity(props);
     });
 
-    // beforeEach(async () => {
-    //     const module: TestingModule = await Test.createTestingModule({
-    //         imports: [UsersModule],
-    //         providers: [UsersService],
-    //     }).compile();
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            imports: [UsersModule],
+            providers: [UsersService],
+        }).compile();
 
-    //     service = module.get<UsersService>(UsersService);
-    // });
+        service = module.get<UsersService>(UsersService);
+    });
 
-    // it('should be defined', () => {
-    //     expect(service).toBeDefined();
-    // });
+    it('should be defined', () => {
+        expect(service).toBeDefined();
+    });
 
     it('User Entity constructor method', () => {
         expect(entity.props.name).toEqual(props.name);
         expect(entity.props.email).toEqual(props.email);
         expect(entity.props.password).toEqual(props.password);
         expect(entity.props.createdAt).toBeInstanceOf(Date);
+    });
+
+    it('id field Getter', () => {
+        expect(entity.id).toBeDefined();
+        expect(typeof entity.id).toBe('string');
     });
 
     it('name field Getter', () => {

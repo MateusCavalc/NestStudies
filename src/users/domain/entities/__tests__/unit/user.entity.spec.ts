@@ -1,6 +1,7 @@
 import { UserDataBuilder } from '../helpers/user-data-builder';
 import { UserEntity, UserProps } from '../../user.entity';
 import * as libClassValidator from 'class-validator';
+import { UserRules } from '@/users/domain/validators/user.validator.rules';
 
 describe('UserEntity unit tests', () => {
     let props: UserProps;
@@ -68,14 +69,11 @@ describe('UserEntity unit tests', () => {
         expect(entity.createdAt).toBeInstanceOf(Date);
     });
 
-    it('Should convert user entity data to JSON', () => {
-        expect(entity.toJSON())
-            .toStrictEqual(
-                {
-                    ...props,
-                    id: entity.id
-                }
-            );
+    it('Should validate user props using user rules without errors', () => {
+        entity = new UserEntity(new UserRules(props));
+
+        expect(entity.validate()).toBeTruthy();
+        expect(entity.errors).toBeNull();
     });
 
 });

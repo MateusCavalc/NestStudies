@@ -12,4 +12,12 @@ export abstract class Entity<Props> extends Validatable<Props> {
     get id() {
         return this._id;
     }
+
+    toJSON(): Required<Props & { id: string }> {
+        return {
+            ... this.toBeValidated,
+            id: this.id,
+        } as Required<Props & { id: string }>
+    }
+
 }

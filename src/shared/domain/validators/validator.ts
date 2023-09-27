@@ -20,6 +20,8 @@ export abstract class Validatable<Props> implements ValidatorInterface<Props> {
                 this.errors[error.property] = Object.values(error.constraints);
             }
 
+            // console.log(this.errors);
+
             return false;
         }
         else return true;

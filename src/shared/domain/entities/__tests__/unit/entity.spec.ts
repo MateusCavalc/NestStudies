@@ -35,4 +35,17 @@ describe('Entity unit tests', () => {
         expect(entity.id).toStrictEqual(id);
     });
 
+    it('Should convert entity data to JSON', () => {
+        const props = { firstField: 'bla', secondField: 'another bla' };
+        entity = new StubEntity(props);
+
+        expect(entity.toJSON())
+            .toStrictEqual(
+                {
+                    ...props,
+                    id: entity.id
+                }
+            );
+    });
+
 });

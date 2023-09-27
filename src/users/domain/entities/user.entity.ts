@@ -1,6 +1,4 @@
 import { Entity } from "@/shared/domain/entities/entity"
-import { FieldsErrors, ValidatorInterface } from "@/shared/domain/validators/validator.interface"
-import { isEmail, validateSync } from "class-validator"
 
 export type UserProps = {
     name: string
@@ -53,13 +51,6 @@ export class UserEntity extends Entity<UserProps> {
 
     get createdAt() {
         return this.props.createdAt;
-    }
-
-    toJSON(): Required<UserProps & { id: string }> {
-        return {
-            ... this.props,
-            id: this.id,
-        } as Required<UserProps & { id: string }>
     }
 
 }

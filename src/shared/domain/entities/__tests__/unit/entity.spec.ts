@@ -26,9 +26,13 @@ describe('Entity unit tests', () => {
     });
 
     it('Should be nicely built using a valid id', () => {
-        entity = new StubEntity(uuid_v4());
+        const id = "4cadd941-fb0a-495e-99e6-e877eaf90f02";
+        entity = new StubEntity(id);
 
+        expect(entity.id).not.toBeNull();
+        expect(entity.id).toBeDefined();
         expect(uuidValidator(entity.id)).toBeTruthy();
+        expect(entity.id).toStrictEqual(id);
     });
 
 });

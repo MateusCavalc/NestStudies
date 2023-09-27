@@ -62,4 +62,14 @@ describe('UserEntity unit tests', () => {
         expect(entity.props.createdAt).toBeDefined();
         expect(entity.props.createdAt).toBeInstanceOf(Date);
     });
+
+    it('Should convert user entity data to JSON', () => {
+        expect(entity.toJSON())
+            .toStrictEqual(
+                {
+                    ...props,
+                    id: entity.id
+                }
+            );
+    });
 });

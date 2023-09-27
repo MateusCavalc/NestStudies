@@ -6,5 +6,5 @@ export interface ValidatorInterface<Props> {
     errors: FieldsErrors;
     toBeValidated: Props;
 
-    validate(): boolean;
+    validate();
 }

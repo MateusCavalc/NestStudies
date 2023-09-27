@@ -23,6 +23,6 @@ export class UserRules {
     createdAt?: Date;
 
     constructor(data: UserProps) {
-        Object.assign(this, data);
+        Object.assign(this, data ?? {});
     }
 }

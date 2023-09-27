@@ -1,16 +1,18 @@
 import { validateSync } from "class-validator";
 import { FieldsErrors, ValidatorInterface } from "./validator.interface";
+import { EntityValidationError } from "../errors/validation-error";
 
 export abstract class Validatable<Props> implements ValidatorInterface<Props> {
 
     errors: FieldsErrors = null;
     toBeValidated: Props;
+    isValid: boolean;
 
     constructor(props: Props) {
         this.toBeValidated = props;
     }
 
-    validate(): boolean {
+    validate() {
         // console.log(`Validating ${JSON.stringify(Object(this.toBeValidated))} object`);
         const errors = validateSync(Object(this.toBeValidated));
 
@@ -22,9 +24,13 @@ export abstract class Validatable<Props> implements ValidatorInterface<Props> {
 
             // console.log(this.errors);
 
-            return false;
+            this.isValid = false;
         }
-        else return true;
+        else this.isValid = true;
+
+        if (!this.isValid) {
+            throw new EntityValidationError(this.errors);
+        }
 
     }
 

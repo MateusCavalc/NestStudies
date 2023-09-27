@@ -1,5 +1,6 @@
 import { IsString, IsEmail, IsAlpha, isNotEmpty, IsNotEmpty } from 'class-validator';
 import { Validatable } from '../../validator';
+import { EntityValidationError } from '@/shared/domain/errors/validation-error';
 
 class StubRules {
     @IsAlpha()
@@ -30,7 +31,7 @@ describe('Validator integration tests', () => {
             })
         );
 
-        expect(stubValidator.validate()).toBeTruthy();
+        expect(() => stubValidator.validate()).not.toThrow();
         expect(stubValidator.errors).toBeNull();
     });
 
@@ -41,7 +42,7 @@ describe('Validator integration tests', () => {
             })
         );
 
-        expect(stubValidator.validate()).toBeFalsy();
+        expect(() => stubValidator.validate()).toThrowError(EntityValidationError);
         expect(stubValidator.errors).not.toBeNull();
 
         expect(stubValidator.errors).toStrictEqual({
@@ -61,7 +62,7 @@ describe('Validator integration tests', () => {
             })
         );
 
-        expect(stubValidator.validate()).toBeFalsy();
+        expect(() => stubValidator.validate()).toThrowError(EntityValidationError);
         expect(stubValidator.errors).not.toBeNull();
 
         expect(stubValidator.errors).toStrictEqual({

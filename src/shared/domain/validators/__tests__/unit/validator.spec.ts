@@ -1,5 +1,6 @@
 import * as libClassValidator from 'class-validator';
 import { Validatable } from '../../validator';
+import { EntityValidationError } from '@/shared/domain/errors/validation-error';
 
 class StubValidator extends Validatable<{ field: string }> { }
 
@@ -11,7 +12,7 @@ describe('Validator unit tests', () => {
     });
 
     it('Should validate props without errors', () => {
-        expect(stubValidator.validate()).toBeTruthy();
+        expect(() => stubValidator.validate()).not.toThrow();
         expect(stubValidator.errors).toBeNull();
     });
 
@@ -23,7 +24,7 @@ describe('Validator unit tests', () => {
             { property: 'someField', constraints: { isRequired: 'someField is required.' } }
         ]);
 
-        expect(stubValidator.validate()).toBeFalsy();
+        expect(() => stubValidator.validate()).toThrowError(EntityValidationError);
         expect(spyValidateSync).toBeCalled();
         expect(stubValidator.errors).not.toBeNull();
         expect(stubValidator.errors).toStrictEqual({ 'someField': ['someField is required.'] });

@@ -1,4 +1,6 @@
 import { Entity } from "@/shared/domain/entities/entity"
+import { FieldsErrors, ValidatorInterface } from "@/shared/domain/validators/validator.interface"
+import { isEmail, validateSync } from "class-validator"
 
 export type UserProps = {
     name: string
@@ -7,9 +9,9 @@ export type UserProps = {
     createdAt?: Date
 }
 
-export class UserEntity extends Entity {
+export class UserEntity extends Entity<UserProps> {
     constructor(public readonly props: UserProps) {
-        super();
+        super(props);
         this.props.createdAt = this.props.createdAt ?? new Date();
     }
 
@@ -59,4 +61,5 @@ export class UserEntity extends Entity {
             id: this.id,
         } as Required<UserProps & { id: string }>
     }
+
 }

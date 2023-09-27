@@ -1,11 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from '@/users/infrastructure/users.service';
-import { UsersModule } from '@/users/infrastructure/users.module';
 import { UserDataBuilder } from '../helpers/user-data-builder';
 import { UserEntity, UserProps } from '../../user.entity';
+import * as libClassValidator from 'class-validator';
 
 describe('UserEntity unit tests', () => {
-    let service: UsersService;
     let props: UserProps;
     let entity: UserEntity;
 
@@ -13,19 +10,6 @@ describe('UserEntity unit tests', () => {
         props = UserDataBuilder({});
 
         entity = new UserEntity(props);
-    });
-
-    beforeEach(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            imports: [UsersModule],
-            providers: [UsersService],
-        }).compile();
-
-        service = module.get<UsersService>(UsersService);
-    });
-
-    it('should be defined', () => {
-        expect(service).toBeDefined();
     });
 
     it('User Entity constructor method', () => {
@@ -93,4 +77,5 @@ describe('UserEntity unit tests', () => {
                 }
             );
     });
+
 });

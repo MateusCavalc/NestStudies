@@ -4,13 +4,13 @@ import {
     v4 as uuid_v4,
 } from 'uuid';
 
-class StubEntity extends Entity { }
+class StubEntity extends Entity<{}> { }
 
 describe('Entity unit tests', () => {
     let entity: StubEntity;
 
     beforeEach(() => {
-        entity = new StubEntity();
+        entity = new StubEntity({});
     });
 
     it('Stub Entity constructor method', () => {
@@ -27,7 +27,7 @@ describe('Entity unit tests', () => {
 
     it('Should be nicely built using a valid id', () => {
         const id = "4cadd941-fb0a-495e-99e6-e877eaf90f02";
-        entity = new StubEntity(id);
+        entity = new StubEntity({}, id);
 
         expect(entity.id).not.toBeNull();
         expect(entity.id).toBeDefined();

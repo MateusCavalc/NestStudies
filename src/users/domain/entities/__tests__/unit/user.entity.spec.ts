@@ -41,26 +41,47 @@ describe('UserEntity unit tests', () => {
     });
 
     it('name field Getter', () => {
-        expect(entity.props.name).toBeDefined();
-        expect(entity.props.name).toEqual(entity.name);
-        expect(typeof entity.props.name).toBe('string');
+        expect(entity.name).toBeDefined();
+        expect(entity.name).toEqual(entity.name);
+        expect(typeof entity.name).toBe('string');
+    });
+
+    it('Should update name field', () => {
+        const newName = "newName";
+        entity.setName(newName);
+
+        expect(entity.name).toEqual(newName);
     });
 
     it('email field Getter', () => {
-        expect(entity.props.email).toBeDefined();
-        expect(entity.props.email).toEqual(entity.email);
-        expect(typeof entity.props.email).toBe('string');
+        expect(entity.email).toBeDefined();
+        expect(entity.email).toEqual(entity.email);
+        expect(typeof entity.email).toBe('string');
+    });
+
+    it('Should update email field', () => {
+        const newEmail = "newEmail";
+        entity.setEmail(newEmail);
+
+        expect(entity.email).toEqual(newEmail);
     });
 
     it('password field Getter', () => {
-        expect(entity.props.password).toBeDefined();
-        expect(entity.props.password).toEqual(entity.password);
-        expect(typeof entity.props.password).toBe('string');
+        expect(entity.password).toBeDefined();
+        expect(entity.password).toEqual(entity.password);
+        expect(typeof entity.password).toBe('string');
+    });
+
+    it('Should update password field', () => {
+        const newPassword = "newPassword";
+        entity.setPassword(newPassword);
+
+        expect(entity.password).toEqual(newPassword);
     });
 
     it('createdAt field Getter', () => {
-        expect(entity.props.createdAt).toBeDefined();
-        expect(entity.props.createdAt).toBeInstanceOf(Date);
+        expect(entity.createdAt).toBeDefined();
+        expect(entity.createdAt).toBeInstanceOf(Date);
     });
 
     it('Should convert user entity data to JSON', () => {

@@ -29,6 +29,13 @@ describe('UserEntity integration tests', () => {
             expect(entity.errors).not.toBeNull();
         });
 
+        it('Should validate user props using user rules with errors (empty props)', () => {
+            entity = new UserEntity(new UserRules({} as any));
+
+            expect(() => entity.validate()).toThrowError(EntityValidationError);
+            expect(entity.errors).not.toBeNull();
+        });
+
         describe('Name validation', () => {
 
             it('Should throw EntityValidationError (missing name)', () => {
@@ -166,6 +173,7 @@ describe('UserEntity integration tests', () => {
                         "email must be an email",
                     ]
                 });
+
             });
 
             it('Should throw EntityValidationError (number email)', () => {

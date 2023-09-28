@@ -23,7 +23,7 @@ class StubValidator extends Validatable<StubRules> { }
 describe('Validator integration tests', () => {
     let stubValidator: StubValidator;
 
-    it('Should validate props without errors', () => {
+    it('Should validate props without errors using rules', () => {
         stubValidator = new StubValidator(
             new StubRules({
                 name: "nomeName",
@@ -35,7 +35,7 @@ describe('Validator integration tests', () => {
         expect(stubValidator.errors).toBeNull();
     });
 
-    it('Should validate props with errors (name empty)', () => {
+    it('Should validate props with errors (name empty) using rules', () => {
         stubValidator = new StubValidator(
             new StubRules({
                 email: "someEmail@email.com",
@@ -54,7 +54,7 @@ describe('Validator integration tests', () => {
         });
     });
 
-    it('Should validate props with errors (email not valid)', () => {
+    it('Should validate props with errors (email not valid) using rules', () => {
         stubValidator = new StubValidator(
             new StubRules({
                 name: "nomeName",

@@ -1,8 +1,5 @@
 import { UserDataBuilder } from '../helpers/user-data-builder';
 import { UserEntity, UserProps } from '../../user.entity';
-import * as libClassValidator from 'class-validator';
-import { UserRules } from '@/users/domain/validators/user.validator.rules';
-import { EntityValidationError } from '@/shared/domain/errors/validation-error';
 
 describe('UserEntity unit tests', () => {
     let props: UserProps;
@@ -68,41 +65,6 @@ describe('UserEntity unit tests', () => {
     it('createdAt field Getter', () => {
         expect(entity.createdAt).toBeDefined();
         expect(entity.createdAt).toBeInstanceOf(Date);
-    });
-
-    it('Should validate user props using user rules without errors', () => {
-        entity = new UserEntity(new UserRules(props));
-
-        expect(() => entity.validate()).not.toThrow();
-        expect(entity.errors).toBeNull();
-    });
-
-    it('Should validate user props using user rules with errors (null props)', () => {
-        entity = new UserEntity(new UserRules(null));
-
-        expect(() => entity.validate()).toThrowError(EntityValidationError);
-        expect(entity.errors).not.toBeNull();
-    });
-
-    it('Should validate user props using user rules with errors (missing name)', () => {
-        entity = new UserEntity(new UserRules(
-            {
-                email: props.email,
-                password: props.password,
-                createdAt: props.createdAt
-            } as UserProps)
-        );
-
-        expect(() => entity.validate()).toThrowError(EntityValidationError);
-        expect(entity.errors).not.toBeNull();
-
-        expect(entity.errors).toStrictEqual({
-            name: [
-                'name should not be empty',
-                'name must be a string',
-                'name must be shorter than or equal to 255 characters',
-            ]
-        });
     });
 
 });

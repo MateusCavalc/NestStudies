@@ -1,4 +1,5 @@
 import { Entity } from "../entities/entity";
+import { NotFoundError } from "../errors/NotFound-error";
 import { RepositoryInterface } from "./repository-contracts";
 
 export abstract class InMemoryRepository<E extends Entity<object>>
@@ -16,7 +17,7 @@ export abstract class InMemoryRepository<E extends Entity<object>>
         entity = this.items.find(item => item.id == id);
 
         if (entity == null) {
-            throw new Error("Entity Not Found");
+            throw new NotFoundError("Entity Not Found");
         }
 
         return entity;
@@ -30,7 +31,7 @@ export abstract class InMemoryRepository<E extends Entity<object>>
         let index = this.items.findIndex(item => item.id == entity.id);
 
         if (index == -1) {
-            throw new Error("Entity Not Found");
+            throw new NotFoundError("Entity Not Found");
         }
 
         this.items[index] = entity;
@@ -39,6 +40,11 @@ export abstract class InMemoryRepository<E extends Entity<object>>
 
     async delete(id: string): Promise<void> {
         let index = this.items.findIndex(item => item.id == id);
+
+        if (index == -1) {
+            throw new NotFoundError("Entity Not Found");
+        }
+
         this.items.splice(index, 1);
     }
 

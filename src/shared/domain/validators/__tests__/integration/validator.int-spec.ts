@@ -1,6 +1,6 @@
 import { IsString, IsEmail, IsAlpha, isNotEmpty, IsNotEmpty } from 'class-validator';
 import { Validatable } from '../../validator';
-import { EntityValidationError } from '@/shared/domain/errors/validation-error';
+import { EntityValidationError } from '@/shared/domain/errors/EntityValidation-error';
 
 class StubRules {
     @IsAlpha()

@@ -1,6 +1,6 @@
 import { validateSync } from "class-validator";
 import { FieldsErrors, ValidatorInterface } from "./validator.interface";
-import { EntityValidationError } from "../errors/validation-error";
+import { EntityValidationError } from "../errors/EntityValidation-error";
 
 export abstract class Validatable<Props> implements ValidatorInterface<Props> {
 

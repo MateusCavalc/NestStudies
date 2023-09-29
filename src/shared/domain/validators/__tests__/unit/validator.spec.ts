@@ -1,6 +1,6 @@
 import * as libClassValidator from 'class-validator';
 import { Validatable } from '../../validator';
-import { EntityValidationError } from '@/shared/domain/errors/validation-error';
+import { EntityValidationError } from '@/shared/domain/errors/EntityValidation-error';
 
 class StubValidator extends Validatable<{ field: string }> { }
 

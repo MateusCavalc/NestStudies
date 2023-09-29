@@ -4,8 +4,9 @@ import { InMemoryRepository } from "@/shared/domain/repositories/InMemory.reposi
 import { UserEntity } from "@/users/domain/entities/user.entity";
 import { UserRepository } from "@/users/domain/repositories/user.repository";
 
+// UserInMemory repo only need to implement specific UserEntity based methods
 export class UserInMemoryRepository extends InMemoryRepository<UserEntity>
-    implements UserRepository {
+    implements UserRepository<UserEntity> {
 
     async findByEMail(email: string): Promise<UserEntity> {
         const entity = this.items.find(item => item.email == email);

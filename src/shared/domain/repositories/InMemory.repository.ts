@@ -1,9 +1,10 @@
 import { Entity } from "../entities/entity";
 import { NotFoundError } from "../errors/NotFound-error";
-import { RepositoryInterface } from "./repository-contracts";
+import { Paginationable, RepositoryInterface } from "./repository-contracts";
 
+// InMemoryRepository implements all basic repo and pagination operations
 export abstract class InMemoryRepository<E extends Entity<object>>
-    implements RepositoryInterface<E> {
+    implements Paginationable<E, any, any> {
 
     items: E[] = [];
 
@@ -46,6 +47,10 @@ export abstract class InMemoryRepository<E extends Entity<object>>
         }
 
         this.items.splice(index, 1);
+    }
+
+    paginate(searchProps: any): Promise<any> {
+        throw new Error("Method not implemented.");
     }
 
 }

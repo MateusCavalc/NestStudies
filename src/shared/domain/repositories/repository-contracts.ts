@@ -1,7 +1,7 @@
 import { Entity } from "../entities/entity";
 
 // Basic repo operations declarations
-export interface RepositoryInterface<E extends Entity<Object>> {
+export interface RepositoryInterface<E extends Entity<object>> {
 
     insert(entity: E): Promise<void>
     findById(id: string): Promise<E>
@@ -22,15 +22,25 @@ export type SearchProps = {
 
 }
 
+export type SearchResultProps<E extends Entity<object>> = {
+    items: E[]
+    total: number
+    currentPage: number
+    perPage: number
+    sort: string | null
+    sortDir: SortDirection | null
+    filter: string | null
+}
+
 export class SearchParams {
-    protected _page: number
-    protected _perPage: number = 10
+    protected _page: number = 1
+    protected _perPage: number = 1
     protected _sort: string | null
     protected _sortDir: SortDirection | null
     protected _filter: string | null
 
 
-    constructor(props: SearchProps) {
+    constructor(props: SearchProps = {}) {
         Object.assign(this, props);
     }
 
@@ -73,7 +83,40 @@ export class SearchParams {
     private set filter(value: string | null) {
         this._filter = value;
     }
-        
+
+}
+
+export class SearchResult<E extends Entity<object>> {
+    readonly items: E[]
+    readonly total: number
+    readonly currentPage: number
+    readonly perPage: number
+    readonly lastPage: number
+    readonly sort: string | null
+    readonly sortDir: SortDirection | null
+    readonly filter: string | null
+
+    constructor(props: SearchResultProps<E>) {
+        Object.assign(this, props);
+
+        this.lastPage = Math.ceil(this.total / this.perPage);
+    }
+
+    toJSON(forceJsonEntity = false) {
+        return {
+            items: forceJsonEntity ? this.items.map(item => {
+                item.toJSON();
+            }) : this.items,
+            total: this.total,
+            currentPage: this.currentPage,
+            perPage: this.perPage,
+            lastPage: this.lastPage,
+            sort: this.sort,
+            sortDir: this.sortDir,
+            filter: this.filter,
+        };
+    }
+
 }
 
 // Paginationable repo operations declarations

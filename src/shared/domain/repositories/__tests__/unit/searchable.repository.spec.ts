@@ -1,6 +1,6 @@
 import { Entity } from "@/shared/domain/entities/entity";
 import { InMemoryRepository } from "../../InMemory.repository";
-import { SearchParams } from "../../repository-contracts";
+import { SearchParams, SearchResult } from "../../repository-contracts";
 import e from "express";
 
 type StubProps = {
@@ -162,15 +162,25 @@ describe('Searchable InMemory Repository unit tests', () => {
     it('Should nicely search repository', async () => {
         const result = await repository.search(
             new SearchParams({
-                page: 1,
+                page: 2,
                 perPage: 1,
                 sort: 'someNumber',
                 sortDir: 'asc',
-                filter: 'Freitas',
+                filter: 'Freitas'
             })
         );
 
-        expect(result.items).toStrictEqual([stubEntities[3]]);
+        expect(result).toStrictEqual(
+            new SearchResult({
+                items: [stubEntities[0]],
+                total: 1,
+                currentPage: 2,
+                perPage: 1,
+                sort: 'someNumber',
+                sortDir: 'asc',
+                filter: 'Freitas'
+            })
+        );
     });
 
 });

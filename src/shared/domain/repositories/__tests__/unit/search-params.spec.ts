@@ -6,7 +6,7 @@ describe('SearchParams unit tests', () => {
         const sParams = new SearchParams();
 
         expect(sParams.page).toBe(1);
-        expect(sParams.perPage).toBe(1);
+        expect(sParams.perPage).toBe(10);
         expect(sParams.sort).toBe(undefined);
         expect(sParams.sortDir).toBe(undefined);
         expect(sParams.filter).toBe(undefined);

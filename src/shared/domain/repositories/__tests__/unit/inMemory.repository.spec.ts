@@ -7,13 +7,13 @@ type StubProps = {
     f2: number,
 }
 
-class StubEntity extends Entity<StubProps> {
-    constructor(public props: StubProps) {
-        super(props);
+class StubEntity extends Entity<StubProps> { }
+
+class StubRepository extends InMemoryRepository<Entity<object>> {
+    protected applyFilter(items: Entity<object>[], filter: string): Promise<Entity<object>[]> {
+        throw new Error("Method not implemented.");
     }
 }
-
-class StubRepository extends InMemoryRepository<Entity<object>> { }
 
 describe('InMemory Repository unit tests', () => {
     let entity: StubEntity

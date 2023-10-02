@@ -34,7 +34,7 @@ export type SearchResultProps<E extends Entity<object>> = {
 
 export class SearchParams {
     protected _page: number = 1
-    protected _perPage: number = 1
+    protected _perPage: number = 10
     protected _sort: string | null
     protected _sortDir: SortDirection | null
     protected _filter: string | null
@@ -119,8 +119,8 @@ export class SearchResult<E extends Entity<object>> {
 
 }
 
-// Paginationable repo operations declarations
-export interface Paginationable<
+// Searchable repo operations declarations
+export interface Searchable<
     E extends Entity<object>,
     PaginationInput = SearchParams,
     PaginationOutput = SearchResult<E>,

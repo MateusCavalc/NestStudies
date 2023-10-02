@@ -25,8 +25,8 @@ class StubRepository extends InMemoryRepository<StubEntity> {
 }
 
 describe('Searchable InMemory Repository unit tests', () => {
-    let repository: StubRepository;
-    let stubEntities: StubEntity[];
+    let repository: StubRepository
+    let stubEntities: StubEntity[]
 
     beforeAll(() => {
         repository = new StubRepository();
@@ -53,6 +53,18 @@ describe('Searchable InMemory Repository unit tests', () => {
             repository.insert(e);
         });
 
+
+    });
+
+    it('Should not apply search params when null', async () => {
+        const result = await repository.search(
+            new SearchParams({
+                page: 1,
+                perPage: 10,
+            })
+        );
+
+        expect(result.items).toStrictEqual(stubEntities);
     });
 
     it('Should apply filter to repository', async () => {
@@ -64,7 +76,7 @@ describe('Searchable InMemory Repository unit tests', () => {
             })
         );
 
-        expect(result.items).toEqual([stubEntities[0], stubEntities[3]]);
+        expect(result.items).toStrictEqual([stubEntities[0], stubEntities[3]]);
     });
 
     it('Should apply sort to repository', async () => {
@@ -76,7 +88,7 @@ describe('Searchable InMemory Repository unit tests', () => {
                 sortDir: 'asc'
             })
         );
-        expect(result.items).toEqual([stubEntities[3], stubEntities[1], stubEntities[0], stubEntities[2]]);
+        expect(result.items).toStrictEqual([stubEntities[3], stubEntities[1], stubEntities[0], stubEntities[2]]);
 
         result = await repository.search(
             new SearchParams({
@@ -86,7 +98,7 @@ describe('Searchable InMemory Repository unit tests', () => {
                 sortDir: 'desc'
             })
         );
-        expect(result.items).toEqual([stubEntities[2], stubEntities[0], stubEntities[1], stubEntities[3]]);
+        expect(result.items).toStrictEqual([stubEntities[2], stubEntities[0], stubEntities[1], stubEntities[3]]);
 
         result = await repository.search(
             new SearchParams({
@@ -96,7 +108,7 @@ describe('Searchable InMemory Repository unit tests', () => {
                 sortDir: 'asc'
             })
         );
-        expect(result.items).toEqual([stubEntities[3], stubEntities[2], stubEntities[0], stubEntities[1]]);
+        expect(result.items).toStrictEqual([stubEntities[3], stubEntities[2], stubEntities[0], stubEntities[1]]);
 
         result = await repository.search(
             new SearchParams({
@@ -106,7 +118,7 @@ describe('Searchable InMemory Repository unit tests', () => {
                 sortDir: 'desc'
             })
         );
-        expect(result.items).toEqual([stubEntities[1], stubEntities[0], stubEntities[2], stubEntities[3]]);
+        expect(result.items).toStrictEqual([stubEntities[1], stubEntities[0], stubEntities[2], stubEntities[3]]);
     });
 
     it('Should apply pagination to repository', async () => {
@@ -117,7 +129,7 @@ describe('Searchable InMemory Repository unit tests', () => {
             })
         );
 
-        expect(result.items).toEqual([stubEntities[0], stubEntities[1]]);
+        expect(result.items).toStrictEqual([stubEntities[0], stubEntities[1]]);
 
         result = await repository.search(
             new SearchParams({
@@ -126,7 +138,25 @@ describe('Searchable InMemory Repository unit tests', () => {
             })
         );
 
-        expect(result.items).toEqual([stubEntities[2], stubEntities[3]]);
+        expect(result.items).toStrictEqual([stubEntities[2], stubEntities[3]]);
+
+        result = await repository.search(
+            new SearchParams({
+                page: 2,
+                perPage: 3,
+            })
+        );
+
+        expect(result.items).toStrictEqual([stubEntities[3]]);
+
+        result = await repository.search(
+            new SearchParams({
+                page: 4,
+                perPage: 2,
+            })
+        );
+
+        expect(result.items).toStrictEqual([]);
     });
 
     it('Should nicely search repository', async () => {
@@ -140,7 +170,7 @@ describe('Searchable InMemory Repository unit tests', () => {
             })
         );
 
-        expect(result.items).toEqual([stubEntities[3]]);
+        expect(result.items).toStrictEqual([stubEntities[3]]);
     });
 
 });

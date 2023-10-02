@@ -88,7 +88,10 @@ export abstract class InMemoryRepository<E extends Entity<object>>
     }
 
     protected async applyPagination(items: E[], page: number, perPage: number | null): Promise<E[]> {
+        const start = (page - 1) * perPage;
+        const end = start + perPage;
 
+        return items.slice(start, end);
     }
 
 }

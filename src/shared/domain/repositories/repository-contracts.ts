@@ -122,10 +122,10 @@ export class SearchResult<E extends Entity<object>> {
 // Paginationable repo operations declarations
 export interface Paginationable<
     E extends Entity<object>,
-    SearchParams,
-    PaginationOutput,
+    PaginationInput = SearchParams,
+    PaginationOutput = SearchResult<E>,
 > extends RepositoryInterface<E> {
 
-    paginate(searchProps: SearchParams): Promise<PaginationOutput>
+    search(searchProps: PaginationInput): Promise<PaginationOutput>
 
 }

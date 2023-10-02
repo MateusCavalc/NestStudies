@@ -1,6 +1,7 @@
+import { UserEntity } from "@/users/domain/entities/user.entity";
 import { Entity } from "../entities/entity";
 import { NotFoundError } from "../errors/NotFound-error";
-import { Paginationable, RepositoryInterface } from "./repository-contracts";
+import { Paginationable, RepositoryInterface, SearchParams, SearchResult, SortDirection } from "./repository-contracts";
 
 // InMemoryRepository implements all basic repo and pagination operations
 export abstract class InMemoryRepository<E extends Entity<object>>
@@ -49,8 +50,45 @@ export abstract class InMemoryRepository<E extends Entity<object>>
         this.items.splice(index, 1);
     }
 
-    paginate(searchProps: any): Promise<any> {
-        throw new Error("Method not implemented.");
+    async search(searchProps: SearchParams): Promise<SearchResult<E>> {
+        const filteredItems = await this.applyFilter(this.items, searchProps.filter);
+        const sortedItems = await this.applySort(filteredItems, searchProps.sort, searchProps.sortDir);
+        const paginatedItems = await this.applyPagination(sortedItems, searchProps.page, searchProps.perPage);
+
+        return new SearchResult({
+            items: paginatedItems,
+            total: paginatedItems.length,
+            currentPage: searchProps.page,
+            perPage: searchProps.perPage,
+            sort: searchProps.sort,
+            sortDir: searchProps.sortDir,
+            filter: searchProps.filter,
+        });
+    }
+
+    protected abstract applyFilter(items: E[], filter: string | null): Promise<E[]>
+
+    protected async applySort(items: E[], sort: string | null, sortDir: SortDirection | null): Promise<E[]> {
+        if (!sort) {
+            return items;
+        }
+
+        // apply sort to copy of items array
+        return [...items].sort((a, b) => {
+            if (a.props[sort] < b.props[sort]) {
+                return sortDir === 'asc' ? -1 : 1;
+            }
+
+            if (a.props[sort] > b.props[sort]) {
+                return sortDir === 'asc' ? 1 : -1;
+            }
+
+            return 0;
+        });
+    }
+
+    protected async applyPagination(items: E[], page: number, perPage: number | null): Promise<E[]> {
+
     }
 
 }

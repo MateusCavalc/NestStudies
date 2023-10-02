@@ -8,6 +8,10 @@ import { UserRepository } from "@/users/domain/repositories/user.repository";
 export class UserInMemoryRepository extends InMemoryRepository<UserEntity>
     implements UserRepository<UserEntity> {
 
+    protected applyFilter(items: UserEntity[], filter: string): Promise<UserEntity[]> {
+        throw new Error("Method not implemented.");
+    }
+
     async findByEMail(email: string): Promise<UserEntity> {
         const entity = this.items.find(item => item.email == email);
 

@@ -1,5 +1,6 @@
 import { UserRepository } from "@/users/domain/repositories/user.repository"
 import { BadRequestError } from "../errors/BadRequest-error"
+import { UserOutput } from "../dtos/user-output"
 
 export namespace GetUserUseCase {
 
@@ -7,13 +8,7 @@ export namespace GetUserUseCase {
         id: string
     }
 
-    export type Output = {
-        id: string
-        name: string
-        email: string
-        password: string
-        createdAt: Date
-    }
+    export type Output = UserOutput
 
     export class UseCase {
         // Dependency Injection of userRepository

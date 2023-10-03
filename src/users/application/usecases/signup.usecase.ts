@@ -32,14 +32,14 @@ export namespace SignUpUseCase {
             }
 
             // Hash user password
-            input.password = await this.hashProvider.generateHash(input.password);
+            input.password = await this.hashProvider.generateHash(password);
 
             const user = new UserEntity(
                 input as UserProps
             );
 
             // Verify if email already exists in the repository
-            await this.userRepositoy.emailExists(user.email);
+            await this.userRepositoy.emailExists(email);
 
             // Insert user in the repository
             await this.userRepositoy.insert(user);

@@ -19,7 +19,6 @@ export type SearchProps = {
     sort?: string | null
     sortDir?: SortDirection | null
     filter?: string | null
-
 }
 
 export type SearchResultProps<E extends Entity<object>> = {

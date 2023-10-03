@@ -5,7 +5,7 @@ import { UserInMemoryRepository } from "@/users/infrastructure/database/in-memor
 import { GetUserUseCase } from "../../getuser.usecase";
 import { v4 as uuid_v4 } from "uuid";
 import { NotFoundError } from "@/shared/domain/errors/NotFound-error";
-import { BadRequestError } from "@/users/application/errors/BadRequest-error";
+import { BadRequestError } from "@/shared/application/errors/BadRequest-error";
 
 describe('GetUser UseCase unit tests', () => {
     let repository: UserRepository.Repository;

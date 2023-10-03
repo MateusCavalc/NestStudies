@@ -1,5 +1,5 @@
 import { UserRepository } from "@/users/domain/repositories/user.repository"
-import { BadRequestError } from "../errors/BadRequest-error"
+import { BadRequestError } from "../../../shared/application/errors/BadRequest-error"
 import { UserEntity, UserProps } from "@/users/domain/entities/user.entity"
 import { HashProvider } from "@/shared/application/providers/hash-provider"
 import { UserOutput } from "../dtos/user-output"

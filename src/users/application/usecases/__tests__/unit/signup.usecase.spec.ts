@@ -4,7 +4,7 @@ import { UserRepository } from "@/users/domain/repositories/user.repository";
 import { UserInMemoryRepository } from "@/users/infrastructure/database/in-memory/repositories/user.inMemory.repository";
 import { SignUpUseCase } from "../../signup.usecase";
 import { ConflictError } from "@/shared/domain/errors/Conflict-error";
-import { BadRequestError } from "@/users/application/errors/BadRequest-error";
+import { BadRequestError } from "@/shared/application/errors/BadRequest-error";
 import { BcryptHashProvider } from "@/users/infrastructure/providers/bcrypt-hash.provider";
 
 describe('SignUp UseCase unit tests', () => {

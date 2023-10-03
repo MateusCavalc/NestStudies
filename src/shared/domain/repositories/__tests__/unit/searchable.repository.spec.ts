@@ -173,7 +173,7 @@ describe('Searchable InMemory Repository unit tests', () => {
         expect(result).toStrictEqual(
             new SearchResult({
                 items: [stubEntities[0]],
-                total: 1,
+                total: 2,
                 currentPage: 2,
                 perPage: 1,
                 sort: 'someNumber',

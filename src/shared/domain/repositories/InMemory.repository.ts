@@ -56,7 +56,7 @@ export abstract class InMemoryRepository<E extends Entity<object>>
 
         return new SearchResult({
             items: paginatedItems,
-            total: paginatedItems.length,
+            total: sortedItems.length,
             currentPage: searchProps.page,
             perPage: searchProps.perPage,
             sort: searchProps.sort,

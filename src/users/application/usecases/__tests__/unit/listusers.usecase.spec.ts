@@ -5,6 +5,7 @@ import { UserInMemoryRepository } from "@/users/infrastructure/database/in-memor
 import { ListUsersUseCase } from "../../listusers.usecase";
 import { BadRequestError } from "@/shared/application/errors/BadRequest-error";
 import { SearchResult } from "@/shared/domain/repositories/repository-contracts";
+import { PaginationOutput } from "@/shared/application/dtos/pagination-output";
 
 describe('ListUsers UseCase unit tests', () => {
     let repository: UserRepository.Repository;
@@ -51,30 +52,26 @@ describe('ListUsers UseCase unit tests', () => {
             perPage: 10,
             sortDir: 'asc'
         })).resolves.toStrictEqual(
-            new SearchResult({
+            {
                 items: stubEntities,
                 total: stubEntities.length,
                 currentPage: 1,
+                lastPage: 1,
                 perPage: 10,
-                sort: undefined,
-                sortDir: 'asc',
-                filter: undefined,
-            })
+            } as PaginationOutput<UserEntity>
         );
 
         expect(useCase.execute({
             page: 2,
             perPage: 2,
         })).resolves.toStrictEqual(
-            new SearchResult({
+            {
                 items: [stubEntities[0]],
-                total: 1,
+                total: 3,
                 currentPage: 2,
+                lastPage: 2,
                 perPage: 2,
-                sort: undefined,
-                sortDir: undefined,
-                filter: undefined,
-            })
+            } as PaginationOutput<UserEntity>
         );
     });
 

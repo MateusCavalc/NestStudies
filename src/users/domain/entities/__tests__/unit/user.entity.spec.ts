@@ -5,8 +5,8 @@ describe('UserEntity unit tests', () => {
     let props: UserProps;
     let entity: UserEntity;
 
-    beforeEach(() => {
-        props = UserDataBuilder({});
+    beforeEach(async () => {
+        props = await UserDataBuilder({});
 
         entity = new UserEntity(props);
     });

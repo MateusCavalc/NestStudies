@@ -120,7 +120,7 @@ export class SearchResult<E extends Entity<object>> {
 }
 
 // Searchable repo operations declarations
-export interface Searchable<
+export interface SearchableRepositoryInterface<
     E extends Entity<object>,
     PaginationInput = SearchParams,
     PaginationOutput = SearchResult<E>,

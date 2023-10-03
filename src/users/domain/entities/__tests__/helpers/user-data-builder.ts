@@ -8,7 +8,9 @@ type FakeProps = {
     createdAt?: Date
 }
 
-export function UserDataBuilder(props: FakeProps): UserProps {
+export async function UserDataBuilder(props: FakeProps): Promise<UserProps> {
+    await sleep(1000);
+
     return {
         name: props.name ?? faker.person.fullName(),
         email: props.email ?? faker.internet.email(),
@@ -16,3 +18,5 @@ export function UserDataBuilder(props: FakeProps): UserProps {
         createdAt: props.createdAt ?? new Date(),
     }
 }
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

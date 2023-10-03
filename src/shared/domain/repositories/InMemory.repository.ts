@@ -1,10 +1,10 @@
 import { Entity } from "../entities/entity";
 import { NotFoundError } from "../errors/NotFound-error";
-import { Searchable, RepositoryInterface, SearchParams, SearchResult, SortDirection } from "./repository-contracts";
+import { SearchableRepositoryInterface, RepositoryInterface, SearchParams, SearchResult, SortDirection } from "./repository-contracts";
 
 // InMemoryRepository implements all basic repo and pagination operations
 export abstract class InMemoryRepository<E extends Entity<object>>
-    implements Searchable<E, any, any> {
+    implements SearchableRepositoryInterface<E, SearchParams, SearchResult<E>> {
 
     items: E[] = [];
 

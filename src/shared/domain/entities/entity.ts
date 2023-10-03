@@ -4,7 +4,7 @@ import { Validatable } from "../validators/validator";
 export abstract class Entity<Props extends object> extends Validatable<Props> {
     private readonly _id: string
 
-    constructor(public props: Props, id?: string) {
+    constructor(public readonly props: Props, id?: string) {
         super(props);
         this._id = id ?? uuid_v4();
     }
@@ -15,7 +15,7 @@ export abstract class Entity<Props extends object> extends Validatable<Props> {
 
     toJSON(): Required<Props & { id: string }> {
         return {
-            ... this.toBeValidated,
+            ... this.props,
             id: this.id,
         } as Required<Props & { id: string }>
     }

@@ -1,7 +1,6 @@
 import { UserRepository } from "@/users/domain/repositories/user.repository"
 import { BadRequestError } from "../../../shared/application/errors/BadRequest-error"
 import { UseCase as DefaultUseCase } from "@/shared/application/usecases/use-case"
-import { UserOutput } from "../dtos/user-output"
 
 export namespace DeleteUserUseCase {
 

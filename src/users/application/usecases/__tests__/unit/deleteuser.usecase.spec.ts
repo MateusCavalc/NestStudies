@@ -3,13 +3,9 @@ import { UserEntity, UserProps } from "@/users/domain/entities/user.entity";
 import { UserRepository } from "@/users/domain/repositories/user.repository";
 import { UserInMemoryRepository } from "@/users/infrastructure/database/in-memory/repositories/user.inMemory.repository";
 import { DeleteUserUseCase } from "../../deleteuser.usecase";
-import { v4 as uuid_v4 } from "uuid";
 import { BadRequestError } from "@/shared/application/errors/BadRequest-error";
 import { NotFoundError } from "@/shared/domain/errors/NotFound-error";
-import { EntityValidationError } from "@/shared/domain/errors/EntityValidation-error";
 import { UserRules } from "@/users/domain/validators/user.validator.rules";
-import { BcryptHashProvider } from "@/users/infrastructure/providers/bcrypt-hash.provider";
-import { InvalidPasswordError } from "@/shared/domain/errors/InvalidPassword-error";
 
 describe('DeleteUser UseCase unit tests', () => {
     let repository: UserRepository.Repository
@@ -58,6 +54,12 @@ describe('DeleteUser UseCase unit tests', () => {
         await useCase.execute({id: entity.id} as DeleteUserUseCase.Input);
 
         expect(deleteSpy).toBeCalled();
+
+        expect(useCase.execute(
+            {
+                id: entity.id
+            } as DeleteUserUseCase.Input
+        )).rejects.toBeInstanceOf(NotFoundError); 
     });
 
 });

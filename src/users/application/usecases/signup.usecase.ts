@@ -4,6 +4,7 @@ import { UserEntity, UserProps } from "@/users/domain/entities/user.entity"
 import { HashProvider } from "@/shared/application/providers/hash-provider"
 import { UserOutput } from "../dtos/user-output"
 import { UseCase as DefaultUseCase } from "@/shared/application/usecases/use-case"
+import { UserRules } from "@/users/domain/validators/user.validator.rules"
 
 export namespace SignUpUseCase {
 
@@ -31,8 +32,11 @@ export namespace SignUpUseCase {
             input.password = await this.hashProvider.generateHash(password);
 
             const user = new UserEntity(
-                input as UserProps
+                new UserRules(
+                    input as UserProps
+                )
             );
+            user.validate();
 
             // Verify if email already exists in the repository
             await this.userRepositoy.emailExists(email);

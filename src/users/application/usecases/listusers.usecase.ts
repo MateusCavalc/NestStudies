@@ -3,14 +3,14 @@ import { BadRequestError } from "../../../shared/application/errors/BadRequest-e
 import { UseCase as DefaultUseCase } from "@/shared/application/usecases/use-case"
 import { SearchInput } from "@/shared/application/dtos/search-input"
 import { SearchParams } from "@/shared/domain/repositories/repository-contracts"
-import { UserEntity } from "@/users/domain/entities/user.entity"
 import { PaginationMapper, PaginationOutput } from "@/shared/application/dtos/pagination-output"
+import { UserOutput } from "../dtos/user-output"
 
 export namespace ListUsersUseCase {
 
     export type Input = SearchInput
 
-    export type Output = PaginationOutput<UserEntity>
+    export type Output = PaginationOutput<UserOutput>
 
     export class UseCase implements DefaultUseCase<Input, Output> {
         // Dependency Injection of userRepository
@@ -27,7 +27,7 @@ export namespace ListUsersUseCase {
                 new SearchParams(input)
             );
 
-            return PaginationMapper.mapToPagination(searchResult);
+            return PaginationMapper.mapToPagination<UserOutput>(searchResult);
         }
     }
 

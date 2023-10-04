@@ -19,6 +19,7 @@ describe('ListUsers UseCase unit tests', () => {
             new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' })),
             new UserEntity(await UserDataBuilder({ name: 'Bruna Freitas' })),
             new UserEntity(await UserDataBuilder({ name: 'Júlia Fernanda' })),
+            new UserEntity(await UserDataBuilder({ name: 'Magda Fernanda' })),
         ];
 
         stubEntities.forEach(e => {
@@ -53,7 +54,7 @@ describe('ListUsers UseCase unit tests', () => {
             sortDir: 'asc'
         })).resolves.toStrictEqual(
             {
-                items: stubEntities,
+                items: [...stubEntities].map(item => item.toJSON()),
                 total: stubEntities.length,
                 currentPage: 1,
                 lastPage: 1,
@@ -63,14 +64,14 @@ describe('ListUsers UseCase unit tests', () => {
 
         expect(useCase.execute({
             page: 2,
-            perPage: 2,
+            perPage: 3,
         })).resolves.toStrictEqual(
             {
-                items: [stubEntities[0]],
-                total: 3,
+                items: [stubEntities[0].toJSON()],
+                total: 4,
                 currentPage: 2,
                 lastPage: 2,
-                perPage: 2,
+                perPage: 3,
             } as PaginationOutput<UserEntity>
         );
     });

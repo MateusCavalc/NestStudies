@@ -4,7 +4,9 @@ import { ConfigModule, ConfigModuleOptions } from '@nestjs/config';
 import { join } from 'node:path';
 
 @Module({
-  providers: [EnvConfService]
+  imports: [ConfigModule],
+  providers: [EnvConfService],
+  exports: [EnvConfService]
 })
 
 export class EnvConfModule extends ConfigModule {

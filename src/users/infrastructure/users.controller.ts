@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Inject, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { SignUpDto } from './dtos/sign-up.dto';
 import { SignInDto } from './dtos/sign-in.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -36,18 +36,19 @@ export class UsersController {
   private deleteUserUseCase: DeleteUserUseCase.UseCase
 
   @Post()
-  create(@Body() createUserDto: SignUpDto) {
-    return this.signUpUseCase.execute(createUserDto);
+  create(@Body() signUpDto: SignUpDto) {
+    return this.signUpUseCase.execute(signUpDto);
   }
 
-  @Post('/auth')
+  @HttpCode(HttpStatus.OK)
+  @Post('auth')
   signin(@Body() signInDto: SignInDto) {
     return this.signInUseCase.execute(signInDto);
   }
 
   @Get()
-  findSome(@Body() listUsersDto: ListUsersDto) {
-    return this.listUsersUseCase.execute(listUsersDto);
+  findSome(@Query() searchParams: ListUsersDto) {
+    return this.listUsersUseCase.execute(searchParams);
   }
 
   @Get(':id')
@@ -55,15 +56,15 @@ export class UsersController {
     return this.getUserUseCase.execute({ id });
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto
   ) {
     return this.updateUserUseCase.execute(
       {
-        ...updateUserDto,
-        id
+        id,
+        ...updateUserDto
       } as UpdateUserUseCase.Input
     );
   }
@@ -75,14 +76,15 @@ export class UsersController {
   ) {
     return this.updatePasswordUseCase.execute(
       {
-        ...updatePasswordDto,
-        id
+        id,
+        ...updatePasswordDto
       } as UpdatePasswordUseCase.Input
     );
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.deleteUserUseCase.execute({ id });
+  async remove(@Param('id') id: string) {
+    await this.deleteUserUseCase.execute({ id });
   }
 }

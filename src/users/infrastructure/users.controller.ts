@@ -1,32 +1,58 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nestjs/common';
 import { SignUpDto } from './dtos/sign-up.dto';
 import { SignInDto } from './dtos/sign-in.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UpdatePasswordDto } from './dtos/update-password.dto';
+import { SignUpUseCase } from '../application/usecases/signup.usecase';
+import { SignInUseCase } from '../application/usecases/signin.usecase';
+import { GetUserUseCase } from '../application/usecases/getuser.usecase';
+import { ListUsersUseCase } from '../application/usecases/listusers.usecase';
+import { UpdateUserUseCase } from '../application/usecases/updateuser.usecase';
+import { UpdatePasswordUseCase } from '../application/usecases/updatepassword.usecase';
+import { DeleteUserUseCase } from '../application/usecases/deleteuser.usecase';
+import { ListUsersDto } from './dtos/list-users.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  @Inject(SignUpUseCase.UseCase)
+  private signUpUseCase: SignUpUseCase.UseCase
+
+  @Inject(SignInUseCase.UseCase)
+  private signInUseCase: SignInUseCase.UseCase
+
+  @Inject(GetUserUseCase.UseCase)
+  private getUserUseCase: GetUserUseCase.UseCase
+
+  @Inject(ListUsersUseCase.UseCase)
+  private listUsersUseCase: ListUsersUseCase.UseCase
+
+  @Inject(UpdateUserUseCase.UseCase)
+  private updateUserUseCase: UpdateUserUseCase.UseCase
+
+  @Inject(UpdatePasswordUseCase.UseCase)
+  private updatePasswordUseCase: UpdatePasswordUseCase.UseCase
+
+  @Inject(DeleteUserUseCase.UseCase)
+  private deleteUserUseCase: DeleteUserUseCase.UseCase
 
   @Post()
   create(@Body() createUserDto: SignUpDto) {
-    return this.usersService.create(createUserDto);
+    return this.signUpUseCase.execute(createUserDto);
   }
 
-  @Post()
+  @Post('/auth')
   signin(@Body() signInDto: SignInDto) {
-    // return this.usersService.create(signInDto);
+    return this.signInUseCase.execute(signInDto);
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findSome(@Body() listUsersDto: ListUsersDto) {
+    return this.listUsersUseCase.execute(listUsersDto);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.getUserUseCase.execute({ id });
   }
 
   @Patch(':id')
@@ -34,7 +60,12 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto
   ) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.updateUserUseCase.execute(
+      {
+        ...updateUserDto,
+        id
+      } as UpdateUserUseCase.Input
+    );
   }
 
   @Patch('password/:id')
@@ -42,11 +73,16 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto
   ) {
-    // return this.usersService.update(+id, updatePasswordDto);
+    return this.updatePasswordUseCase.execute(
+      {
+        ...updatePasswordDto,
+        id
+      } as UpdatePasswordUseCase.Input
+    );
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.deleteUserUseCase.execute({ id });
   }
 }

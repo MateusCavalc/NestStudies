@@ -108,6 +108,27 @@ describe('User Prisma Repository unit tests', () => {
             })).resolves.toStrictEqual(user.toJSON());
         });
 
+        it("Should throw error when trying to delete non-existing user (NotFound)", async () => {
+            const user = new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' }));
+
+            expect(repository.delete(user.id)).rejects.toThrowError(NotFoundError);
+        });
+    
+        it("Should delete user", async () => {
+            const user = new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' }));
+    
+            await prismaService.user.create({
+                data: user.toJSON()
+            });
+        
+            await expect(repository.delete(user.id)).resolves.not.toThrowError();
+            expect(prismaService.user.findUnique({
+                where: {
+                    id: user.id
+                }
+            })).resolves.toBeNull();
+        });
+
     });
 
     describe('Search method', () => {

@@ -99,13 +99,14 @@ describe('User Prisma Repository unit tests', () => {
             });
     
             user.setName('Some other name for this entity');
-    
-            await expect(repository.update(user)).resolves.not.toThrowError();
-            expect(prismaService.user.findUnique({
+            await repository.update(user);
+            const result = await prismaService.user.findUnique({
                 where: {
                     id: user.id
                 }
-            })).resolves.toStrictEqual(user.toJSON());
+            });
+
+            expect(result).toStrictEqual(user.toJSON());
         });
 
         it("Should throw error when trying to delete non-existing user (NotFound)", async () => {
@@ -127,6 +128,24 @@ describe('User Prisma Repository unit tests', () => {
                     id: user.id
                 }
             })).resolves.toBeNull();
+        });
+
+        it("Should throw error when trying to find non-existing user by email (NotFound)", async () => {
+            const user = new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' }));
+
+            expect(repository.findByEmail(user.email)).rejects.toThrowError(NotFoundError);
+        });
+
+        it("Should find user by email", async () => {
+            const user = new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' }));
+
+            await prismaService.user.create({
+                data: user.toJSON()
+            });
+            
+            const result = await repository.findByEmail(user.email);
+
+            expect(result.toJSON()).toStrictEqual(user.toJSON());
         });
 
     });

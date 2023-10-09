@@ -1,7 +1,6 @@
 import { Entity } from "@/shared/domain/entities/entity";
 import { InMemoryRepository } from "../../InMemory.repository";
 import { SearchParams, SearchResult } from "../../repository-contracts";
-import e from "express";
 
 type StubProps = {
     someName: string,
@@ -17,7 +16,7 @@ class StubRepository extends InMemoryRepository<StubEntity> {
         }
 
         return items.filter(item => {
-            return item.props.someName.toLowerCase().includes(filter.toLowerCase());
+            return item['props'].someName.toLowerCase().includes(filter.toLowerCase());
         });
 
     }

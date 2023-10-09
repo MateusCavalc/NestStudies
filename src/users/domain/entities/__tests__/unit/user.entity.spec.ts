@@ -12,10 +12,10 @@ describe('UserEntity unit tests', () => {
     });
 
     it('User Entity constructor method', () => {
-        expect(entity.props.name).toEqual(props.name);
-        expect(entity.props.email).toEqual(props.email);
-        expect(entity.props.password).toEqual(props.password);
-        expect(entity.props.createdAt).toBeInstanceOf(Date);
+        expect(entity['props'].name).toEqual(props.name);
+        expect(entity['props'].email).toEqual(props.email);
+        expect(entity['props'].password).toEqual(props.password);
+        expect(entity['props'].createdAt).toBeInstanceOf(Date);
     });
 
     it('id field Getter', () => {
@@ -25,7 +25,7 @@ describe('UserEntity unit tests', () => {
 
     it('name field Getter', () => {
         expect(entity.name).toBeDefined();
-        expect(entity.name).toEqual(entity.name);
+        expect(entity.name).toEqual(entity['props'].name);
         expect(typeof entity.name).toBe('string');
     });
 
@@ -38,7 +38,7 @@ describe('UserEntity unit tests', () => {
 
     it('email field Getter', () => {
         expect(entity.email).toBeDefined();
-        expect(entity.email).toEqual(entity.email);
+        expect(entity.email).toEqual(entity['props'].email);
         expect(typeof entity.email).toBe('string');
     });
 
@@ -51,7 +51,7 @@ describe('UserEntity unit tests', () => {
 
     it('password field Getter', () => {
         expect(entity.password).toBeDefined();
-        expect(entity.password).toEqual(entity.password);
+        expect(entity.password).toEqual(entity['props'].password);
         expect(typeof entity.password).toBe('string');
     });
 
@@ -64,6 +64,7 @@ describe('UserEntity unit tests', () => {
 
     it('createdAt field Getter', () => {
         expect(entity.createdAt).toBeDefined();
+        expect(entity.createdAt).toEqual(entity['props'].createdAt);
         expect(entity.createdAt).toBeInstanceOf(Date);
     });
 

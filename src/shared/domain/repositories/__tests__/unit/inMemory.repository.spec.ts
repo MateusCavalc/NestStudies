@@ -63,7 +63,7 @@ describe('InMemory Repository unit tests', () => {
     });
 
     it('Should nicely update a entity', async () => {
-        entity.props.f1 = 5;
+        entity['props'].f1 = 5;
 
         await repository.update(entity);
 

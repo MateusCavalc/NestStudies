@@ -4,7 +4,7 @@ import { Validatable } from "../validators/validator";
 export abstract class Entity<Props extends object> extends Validatable<Props> {
     private readonly _id: string
 
-    constructor(public readonly props: Props, id?: string) {
+    constructor(private readonly props: Props, id?: string) {
         super(props);
         this._id = id ?? uuid_v4();
     }

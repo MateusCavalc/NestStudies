@@ -74,11 +74,11 @@ export abstract class InMemoryRepository<E extends Entity<object>>
 
         // apply sort to copy of items array
         return [...items].sort((a, b) => {
-            if (a.props[sort] < b.props[sort]) {
+            if (a['props'][sort] < b['props'][sort]) {
                 return sortDir === 'asc' ? -1 : 1;
             }
 
-            if (a.props[sort] > b.props[sort]) {
+            if (a['props'][sort] > b['props'][sort]) {
                 return sortDir === 'asc' ? 1 : -1;
             }
 

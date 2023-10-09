@@ -34,7 +34,7 @@ export class UserInMemoryRepository extends InMemoryRepository<UserEntity>
         }
 
         return items.filter(item => {
-            return item.props.name.toLowerCase().includes(filter.toLowerCase());
+            return item.name.toLowerCase().includes(filter.toLowerCase());
         });
 
     }

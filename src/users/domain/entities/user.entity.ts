@@ -14,11 +14,11 @@ export class UserEntity extends Entity<UserProps> {
     }
 
     get name() {
-        return this.props.name;
+        return this['props'].name;
     }
 
     private set name(value: string) {
-        this.props.name = value;
+        this['props'].name = value;
     }
 
     public setName(value: string) {
@@ -26,11 +26,11 @@ export class UserEntity extends Entity<UserProps> {
     }
 
     get email() {
-        return this.props.email;
+        return this['props'].email;
     }
 
     private set email(value: string) {
-        this.props.email = value;
+        this['props'].email = value;
     }
 
     public setEmail(value: string) {
@@ -38,11 +38,11 @@ export class UserEntity extends Entity<UserProps> {
     }
 
     get password() {
-        return this.props.password;
+        return this['props'].password;
     }
 
     private set password(value: string) {
-        this.props.password = value;
+        this['props'].password = value;
     }
 
     public setPassword(value: string) {
@@ -50,7 +50,7 @@ export class UserEntity extends Entity<UserProps> {
     }
 
     get createdAt() {
-        return this.props.createdAt;
+        return this['props'].createdAt;
     }
 
 }

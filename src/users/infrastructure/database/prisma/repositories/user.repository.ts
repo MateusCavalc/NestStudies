@@ -66,21 +66,20 @@ export class UserPrismaRepository implements UserRepository.Repository {
     }
 
     async findById(id: string): Promise<UserEntity> {
-        try {
-            const user = await this.prismaService.user.findUnique({
-                where: { id }
-            });
+        const user = await this.prismaService.user.findUnique({
+            where: { id }
+        });
 
-            return new UserEntity({
-                name: user.name,
-                email: user.email,
-                password: user.password,
-                createdAt: user.createdAt,
-            }, id);
-
-        } catch {
+        if(!user) {
             throw new NotFoundError(`Could not found user with id ${id}`);
         }
+
+        return new UserEntity({
+            name: user.name,
+            email: user.email,
+            password: user.password,
+            createdAt: user.createdAt,
+        }, id);
     }
 
     async findAll(): Promise<UserEntity[]> {
@@ -93,8 +92,21 @@ export class UserPrismaRepository implements UserRepository.Repository {
                                 }, model.id));
     }
 
-    update(entity: UserEntity): Promise<void> {
-        throw new Error("Method not implemented.");
+    async update(entity: UserEntity): Promise<void> {
+        const user = await this.prismaService.user.findUnique({
+            where: { id: entity.id }
+        });
+        
+        if(!user) {
+            throw new NotFoundError(`Could not found user with id ${entity.id}`);
+        }
+
+        await this.prismaService.user.update({
+            data: entity.toJSON(),
+            where: {
+                id: entity.id
+            }
+        });
     }
 
     delete(id: string): Promise<void> {

@@ -8,6 +8,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { DatabaseModule } from "@/shared/infrastructure/database/database.module";
 import { PrismaClient } from "@prisma/client";
 import { SearchParams } from "@/shared/domain/repositories/repository-contracts";
+import { v4 as uuid_v4} from "uuid";
 
 describe('User Prisma Repository unit tests', () => {
     const prismaService = new PrismaClient()
@@ -38,35 +39,7 @@ describe('User Prisma Repository unit tests', () => {
         it("User Prisma Repository should be defined", () => {
             expect(repository).toBeDefined();
         });
-    
-        it("Should throw error when searching user by Id (NotFound)", () => {
-            expect(repository.findById('fake ID')).rejects.toThrowError(NotFoundError);
-        });
-    
-        it("Should find user by id", async () => {
-            const user = new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' }));
-    
-            await prismaService.user.create({
-                data: user.toJSON()
-            });
-    
-            const result = await repository.findById(user.id);
-    
-            expect(result.toJSON()).toStrictEqual(user.toJSON());
-        });
-    
-        it("Should find user by id", async () => {
-            const user = new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' }));
-    
-            await repository.insert(user);
-    
-            const result = await prismaService.user.findUnique({
-                where: {id: user.id}
-            });
-    
-            expect(result).toStrictEqual(user.toJSON());
-        });
-    
+
         it("Should find all users", async () => {
             const users = [
                 new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' })),
@@ -82,6 +55,57 @@ describe('User Prisma Repository unit tests', () => {
     
             expect(result).toHaveLength(3);
             expect(JSON.stringify(result)).toStrictEqual(JSON.stringify(users));
+        });
+    
+        it("Should throw error when searching user by Id (NotFound)", () => {
+            expect(repository.findById(uuid_v4())).rejects.toThrowError(NotFoundError);
+        });
+    
+        it("Should find user by id", async () => {
+            const user = new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' }));
+    
+            await prismaService.user.create({
+                data: user.toJSON()
+            });
+    
+            const result = await repository.findById(user.id);
+    
+            expect(result.toJSON()).toStrictEqual(user.toJSON());
+        });
+    
+        it("Should insert new user in repository", async () => {
+            const user = new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' }));
+    
+            await repository.insert(user);
+    
+            const result = await prismaService.user.findUnique({
+                where: {id: user.id}
+            });
+    
+            expect(result).toStrictEqual(user.toJSON());
+        });
+
+        it("Should throw error when trying to update non-existing user (NotFound)", async () => {
+            const user = new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' }));
+
+            expect(repository.update(user)).rejects.toThrowError(NotFoundError);
+        });
+    
+        it("Should update user", async () => {
+            const user = new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' }));
+    
+            await prismaService.user.create({
+                data: user.toJSON()
+            });
+    
+            user.setName('Some other name for this entity');
+    
+            await expect(repository.update(user)).resolves.not.toThrowError();
+            expect(prismaService.user.findUnique({
+                where: {
+                    id: user.id
+                }
+            })).resolves.toStrictEqual(user.toJSON());
         });
 
     });

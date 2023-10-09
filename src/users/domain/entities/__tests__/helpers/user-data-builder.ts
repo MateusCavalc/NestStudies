@@ -9,7 +9,7 @@ type FakeProps = {
 }
 
 export async function UserDataBuilder(props: FakeProps): Promise<UserProps> {
-    await sleep(1000);
+    await sleep(100);
 
     return {
         name: props.name ?? faker.person.fullName(),

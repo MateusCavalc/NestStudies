@@ -15,8 +15,48 @@ export class UserPrismaRepository implements UserRepository.Repository {
         throw new Error("Method not implemented.");
     }
 
-    search(searchProps: UserRepository.SearchParams): Promise<UserRepository.SearchResult> {
-        throw new Error("Method not implemented.");
+    async search(searchProps: UserRepository.SearchParams): Promise<UserRepository.SearchResult> {
+        const count = await this.prismaService.user.count({
+            ...(searchProps.filter && { // If searchProps contains filter, apply it to count 
+                where: {
+                    name: {
+                        contains: searchProps.filter,
+                        mode: 'insensitive'
+                    }
+                }
+            })
+        });
+
+        const models = await this.prismaService.user.findMany({
+            ...(searchProps.filter && {
+                where: {
+                    name: {
+                        contains: searchProps.filter,
+                        mode: 'insensitive'
+                    }
+                }
+            }),
+            orderBy: {
+                    [searchProps.sort ? searchProps.sort : 'createdAt']: (searchProps.sortDir ? searchProps.sortDir : 'desc')
+            },
+            take: searchProps.perPage,
+            skip: (searchProps.page - 1) * searchProps.perPage
+        });
+
+        return new UserRepository.SearchResult({
+            items: models.map(item => new UserEntity({
+                                            name: item.name,
+                                            email: item.email,
+                                            password: item.password,
+                                            createdAt: item.createdAt,
+                                        }, item.id)),
+            total: count,
+            currentPage: searchProps.page,
+            perPage: searchProps.perPage,
+            sort: searchProps.sort,
+            sortDir: searchProps.sortDir,
+            filter: searchProps.filter
+        });
     }
 
     async insert(entity: UserEntity): Promise<void> {

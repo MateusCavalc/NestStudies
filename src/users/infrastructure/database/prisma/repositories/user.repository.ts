@@ -19,8 +19,10 @@ export class UserPrismaRepository implements UserRepository.Repository {
         throw new Error("Method not implemented.");
     }
 
-    insert(entity: UserEntity): Promise<void> {
-        throw new Error("Method not implemented.");
+    async insert(entity: UserEntity): Promise<void> {
+        await this.prismaService.user.create({
+            data: entity.toJSON()
+        });
     }
 
     async findById(id: string): Promise<UserEntity> {
@@ -48,7 +50,7 @@ export class UserPrismaRepository implements UserRepository.Repository {
     update(entity: UserEntity): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    
+
     delete(id: string): Promise<void> {
         throw new Error("Method not implemented.");
     }

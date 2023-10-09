@@ -64,4 +64,20 @@ describe('User Prisma Repository unit tests', () => {
         expect(result).toStrictEqual(user.toJSON());
     });
 
+    it("Should find all users", async () => {
+        const users = [
+            new UserEntity(await UserDataBuilder({ name: 'Mateus Freitas' })),
+            new UserEntity(await UserDataBuilder({ name: 'Bruna Freitas' })),
+            new UserEntity(await UserDataBuilder({ name: 'Jaciara Freitas' }))
+        ];
+
+        await prismaService.user.createMany({
+            data: users.map(user => user.toJSON())
+        });
+
+        const result = await repository.findAll();
+
+        expect(result).toStrictEqual(users);
+    });
+
 });

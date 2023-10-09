@@ -43,8 +43,14 @@ export class UserPrismaRepository implements UserRepository.Repository {
         }
     }
 
-    findAll(): Promise<UserEntity[]> {
-        throw new Error("Method not implemented.");
+    async findAll(): Promise<UserEntity[]> {
+        return (await this.prismaService.user.findMany())
+                    .map(model => new UserEntity({
+                                    name: model.name,
+                                    email: model.email,
+                                    password: model.password,
+                                    createdAt: model.createdAt,
+                                }, model.id));
     }
 
     update(entity: UserEntity): Promise<void> {

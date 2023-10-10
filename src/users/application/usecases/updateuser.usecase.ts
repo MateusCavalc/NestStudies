@@ -3,7 +3,7 @@ import { BadRequestError } from "../../../shared/application/errors/BadRequest-e
 import { UseCase as DefaultUseCase } from "@/shared/application/usecases/use-case"
 import { UserOutput } from "../dtos/user-output"
 
-export namespace UpdateUserUseCase {
+export namespace    UpdateUserUseCase {
 
     export type Input = {
         id: string

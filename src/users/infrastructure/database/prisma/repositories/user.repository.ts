@@ -3,6 +3,7 @@ import { NotFoundError } from "@/shared/domain/errors/NotFound-error";
 import { PrismaService } from "@/shared/infrastructure/database/prisma/prisma.service";
 import { UserEntity } from "@/users/domain/entities/user.entity";
 import { UserRepository } from "@/users/domain/repositories/user.repository";
+import { UserRules } from "@/users/domain/validators/user.validator.rules";
 
 export class UserPrismaRepository implements UserRepository.Repository {
 
@@ -17,12 +18,12 @@ export class UserPrismaRepository implements UserRepository.Repository {
             throw new NotFoundError(`Could not found user with email ${email}`);
         }
 
-        return new UserEntity({
+        return new UserEntity(new UserRules({
             name: user.name,
             email: email,
             password: user.password,
             createdAt: user.createdAt,
-        }, user.id);
+        }), user.id);
     }
 
     async emailExists(email: string): Promise<void> {
@@ -64,12 +65,12 @@ export class UserPrismaRepository implements UserRepository.Repository {
         });
 
         return new UserRepository.SearchResult({
-            items: models.map(item => new UserEntity({
-                                            name: item.name,
-                                            email: item.email,
-                                            password: item.password,
-                                            createdAt: item.createdAt,
-                                        }, item.id)),
+            items: models.map(item => new UserEntity(new UserRules({
+                name: item.name,
+                email: item.email,
+                password: item.password,
+                createdAt: item.createdAt,
+            }), item.id)),
             total: count,
             currentPage: searchProps.page,
             perPage: searchProps.perPage,
@@ -94,22 +95,22 @@ export class UserPrismaRepository implements UserRepository.Repository {
             throw new NotFoundError(`Could not found user with id ${id}`);
         }
 
-        return new UserEntity({
+        return new UserEntity(new UserRules({
             name: user.name,
             email: user.email,
             password: user.password,
             createdAt: user.createdAt,
-        }, id);
+        }), id);
     }
 
     async findAll(): Promise<UserEntity[]> {
         return (await this.prismaService.user.findMany())
-                    .map(model => new UserEntity({
-                                    name: model.name,
-                                    email: model.email,
-                                    password: model.password,
-                                    createdAt: model.createdAt,
-                                }, model.id));
+                    .map(model => new UserEntity(new UserRules({
+                        name: model.name,
+                        email: model.email,
+                        password: model.password,
+                        createdAt: model.createdAt,
+                    }), model.id));
     }
 
     async update(entity: UserEntity): Promise<void> {

@@ -11,6 +11,8 @@ import { UpdateUserUseCase } from '../application/usecases/updateuser.usecase';
 import { UpdatePasswordUseCase } from '../application/usecases/updatepassword.usecase';
 import { DeleteUserUseCase } from '../application/usecases/deleteuser.usecase';
 import { ListUsersDto } from './dtos/list-users.dto';
+import { UserOutput } from '../application/dtos/user-output';
+import { UserView } from './presenters/user.presenter';
 
 @Controller('users')
 export class UsersController {
@@ -35,51 +37,68 @@ export class UsersController {
   @Inject(DeleteUserUseCase.UseCase)
   private deleteUserUseCase: DeleteUserUseCase.UseCase
 
+  private userToView(output: UserOutput) {
+    return new UserView(output);
+  }
+
   @Post()
-  create(@Body() signUpDto: SignUpDto) {
-    return this.signUpUseCase.execute(signUpDto);
+  async create(@Body() signUpDto: SignUpDto) {
+    const userOutput = await this.signUpUseCase.execute(signUpDto);
+
+    return this.userToView(userOutput);
+
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('auth')
-  signin(@Body() signInDto: SignInDto) {
-    return this.signInUseCase.execute(signInDto);
+  async signin(@Body() signInDto: SignInDto) {
+    const userOutput = await this.signInUseCase.execute(signInDto);
+
+    return this.userToView(userOutput);
   }
 
   @Get()
-  findSome(@Query() searchParams: ListUsersDto) {
-    return this.listUsersUseCase.execute(searchParams);
+  async findSome(@Query() searchParams: ListUsersDto) {
+    const paginationOutput = await this.listUsersUseCase.execute(searchParams);
+
+    return paginationOutput.items.map(item => this.userToView(item));
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.getUserUseCase.execute({ id });
+  async findOne(@Param('id') id: string) {
+    const userOutput = await this.getUserUseCase.execute({ id });
+
+    return this.userToView(userOutput);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto
   ) {
-    return this.updateUserUseCase.execute(
+    const userOutput = await this.updateUserUseCase.execute(
       {
         id,
         ...updateUserDto
       } as UpdateUserUseCase.Input
     );
+
+    return this.userToView(userOutput);
   }
 
   @Patch('password/:id')
-  updatePassword(
+  async updatePassword(
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto
   ) {
-    return this.updatePasswordUseCase.execute(
+    const userOutput = await this.updatePasswordUseCase.execute(
       {
         id,
         ...updatePasswordDto
       } as UpdatePasswordUseCase.Input
     );
+
+    return this.userToView(userOutput);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

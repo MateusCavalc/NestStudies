@@ -26,6 +26,10 @@ describe('User Prisma Repository unit tests', () => {
 
     }, 60000); // 60 seconds timeout to apply the migrations, if any.
 
+    afterAll(async () => {
+        await module.close();
+    });
+
     describe('Repository methods', () => {
 
         beforeEach(async () => {

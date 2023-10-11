@@ -12,7 +12,8 @@ import { UpdatePasswordUseCase } from '../application/usecases/updatepassword.us
 import { DeleteUserUseCase } from '../application/usecases/deleteuser.usecase';
 import { ListUsersDto } from './dtos/list-users.dto';
 import { UserOutput } from '../application/dtos/user-output';
-import { UserView } from './presenters/user.presenter';
+import { UserPaginationView, UserView } from './presenters/user.presenter';
+import { PaginationOutput } from '@/shared/application/dtos/pagination-output';
 
 @Controller('users')
 export class UsersController {
@@ -41,6 +42,10 @@ export class UsersController {
     return new UserView(output);
   }
 
+  private paginationToView(paginationOutput: PaginationOutput<UserOutput>) {
+    return new UserPaginationView(paginationOutput);
+  }
+
   @Post()
   async create(@Body() signUpDto: SignUpDto) {
     const userOutput = await this.signUpUseCase.execute(signUpDto);
@@ -60,9 +65,8 @@ export class UsersController {
   @Get()
   async findSome(@Query() searchParams: ListUsersDto) {
     const paginationOutput = await this.listUsersUseCase.execute(searchParams);
-    paginationOutput.items.map(item => this.userToView(item));
-
-    return paginationOutput;
+    
+    return this.paginationToView(paginationOutput);
   }
 
   @Get(':id')

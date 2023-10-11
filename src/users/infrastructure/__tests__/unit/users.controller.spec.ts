@@ -9,13 +9,12 @@ import { UpdatePasswordDto } from '../../dtos/update-password.dto';
 import { UserOutput } from '@/users/application/dtos/user-output';
 import { ListUsersDto } from '../../dtos/list-users.dto';
 import { ListUsersUseCase } from '@/users/application/usecases/listusers.usecase';
-import { UserView } from '../../presenters/user.presenter';
+import { UserPaginationView, UserView } from '../../presenters/user.presenter';
 
 describe('UsersController', () => {
   let controller: UsersController
   let userProps: UserProps
   let user: UserEntity
-  let userView: UserView
 
   beforeAll(async () => {
     controller = new UsersController();
@@ -23,8 +22,6 @@ describe('UsersController', () => {
     user = new UserEntity(
       new UserRules(userProps)
     );
-
-    userView = new UserView(user.toJSON() as UserOutput);
   });
 
   it('Should be defined', () => {
@@ -33,7 +30,7 @@ describe('UsersController', () => {
 
   it('Should sign up a new user', async () => {
     const mockSignUpUseCase = {
-      execute: jest.fn().mockReturnValue(Promise.resolve(userView))
+      execute: jest.fn().mockReturnValue(Promise.resolve(user.toJSON()))
     };
 
     controller['signUpUseCase'] = mockSignUpUseCase as any;
@@ -46,13 +43,15 @@ describe('UsersController', () => {
 
     const result = await controller.create(signUpParams);
 
+    const userView = new UserView(user.toJSON() as UserOutput);
+
     expect(result).toStrictEqual(userView);
     expect(mockSignUpUseCase.execute).toBeCalledWith(signUpParams);
   });
 
   it('Should sign in with user credentials', async () => {
     const mockSignInUseCase = {
-      execute: jest.fn().mockReturnValue(Promise.resolve(userView))
+      execute: jest.fn().mockReturnValue(Promise.resolve(user.toJSON()))
     };
 
     controller['signInUseCase'] = mockSignInUseCase as any;
@@ -64,6 +63,8 @@ describe('UsersController', () => {
 
     const result = await controller.signin(signInParams);
 
+    const userView = new UserView(user.toJSON() as UserOutput);
+
     expect(result).toStrictEqual(userView);
     expect(mockSignInUseCase.execute).toBeCalledWith(signInParams);
   });
@@ -72,7 +73,7 @@ describe('UsersController', () => {
     user.setName('Novo nome para o Mateus');
 
     const mockUpdateUserUseCase = {
-      execute: jest.fn().mockReturnValue(Promise.resolve(userView))
+      execute: jest.fn().mockReturnValue(Promise.resolve(user.toJSON()))
     };
 
     controller['updateUserUseCase'] = mockUpdateUserUseCase as any;
@@ -82,6 +83,8 @@ describe('UsersController', () => {
     }
 
     const result = await controller.update(user.id, updateParams);
+    
+    const userView = new UserView(user.toJSON() as UserOutput);
 
     expect(result).toStrictEqual(userView);
     expect(mockUpdateUserUseCase.execute).toBeCalledWith(
@@ -96,7 +99,7 @@ describe('UsersController', () => {
     user.setPassword('novaSenha123');
 
     const mockUpdatePasswordUseCase = {
-      execute: jest.fn().mockReturnValue(Promise.resolve(userView))
+      execute: jest.fn().mockReturnValue(Promise.resolve(user.toJSON()))
     };
 
     controller['updatePasswordUseCase'] = mockUpdatePasswordUseCase as any;
@@ -107,6 +110,8 @@ describe('UsersController', () => {
     }
 
     const result = await controller.updatePassword(user.id, updatePasswordParams);
+
+    const userView = new UserView(user.toJSON() as UserOutput);
 
     expect(result).toStrictEqual(userView);
     expect(mockUpdatePasswordUseCase.execute).toBeCalledWith(
@@ -119,12 +124,14 @@ describe('UsersController', () => {
 
   it('Should get user', async () => {
     const mockGetUserUseCase = {
-      execute: jest.fn().mockReturnValue(Promise.resolve(userView))
+      execute: jest.fn().mockReturnValue(Promise.resolve(user.toJSON()))
     };
 
     controller['getUserUseCase'] = mockGetUserUseCase as any;
 
     const result = await controller.findOne(user.id);
+
+    const userView = new UserView(user.toJSON() as UserOutput);
 
     expect(result).toStrictEqual(userView);
     expect(mockGetUserUseCase.execute).toBeCalledWith(
@@ -138,7 +145,7 @@ describe('UsersController', () => {
     const mockListUsersUseCase = {
       execute: jest.fn().mockReturnValue(Promise.resolve(
         {
-          items: [userView],
+          items: [user.toJSON()],
           total: 1,
           currentPage: 1,
           lastPage: 1,
@@ -156,15 +163,17 @@ describe('UsersController', () => {
 
     const result = await controller.findSome(listUsersParams);
 
-    expect(result).toStrictEqual(
+    const userPaginationView = new UserPaginationView(
       {
-        items: [userView],
+        items: [user.toJSON()],
         total: 1,
         currentPage: 1,
         lastPage: 1,
         perPage: 1
-      } as ListUsersUseCase.Output
+      }
     );
+
+    expect(result).toStrictEqual(userPaginationView);
     expect(mockListUsersUseCase.execute).toBeCalledWith(listUsersParams);
   });
 

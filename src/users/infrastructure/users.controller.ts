@@ -38,11 +38,11 @@ export class UsersController {
   @Inject(DeleteUserUseCase.UseCase)
   private deleteUserUseCase: DeleteUserUseCase.UseCase
 
-  private userToView(output: UserOutput) {
+  static userToView(output: UserOutput) {
     return new UserView(output);
   }
 
-  private paginationToView(paginationOutput: PaginationOutput<UserOutput>) {
+  static paginationToView(paginationOutput: PaginationOutput<UserOutput>) {
     return new UserPaginationView(paginationOutput);
   }
 
@@ -50,7 +50,7 @@ export class UsersController {
   async create(@Body() signUpDto: SignUpDto) {
     const userOutput = await this.signUpUseCase.execute(signUpDto);
 
-    return this.userToView(userOutput);
+    return UsersController.userToView(userOutput);
 
   }
 
@@ -59,21 +59,21 @@ export class UsersController {
   async signin(@Body() signInDto: SignInDto) {
     const userOutput = await this.signInUseCase.execute(signInDto);
 
-    return this.userToView(userOutput);
+    return UsersController.userToView(userOutput);
   }
 
   @Get()
   async findSome(@Query() searchParams: ListUsersDto) {
     const paginationOutput = await this.listUsersUseCase.execute(searchParams);
-    
-    return this.paginationToView(paginationOutput);
+
+    return UsersController.paginationToView(paginationOutput);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const userOutput = await this.getUserUseCase.execute({ id });
 
-    return this.userToView(userOutput);
+    return UsersController.userToView(userOutput);
   }
 
   @Put(':id')
@@ -88,7 +88,7 @@ export class UsersController {
       } as UpdateUserUseCase.Input
     );
 
-    return this.userToView(userOutput);
+    return UsersController.userToView(userOutput);
   }
 
   @Patch('password/:id')
@@ -103,7 +103,7 @@ export class UsersController {
       } as UpdatePasswordUseCase.Input
     );
 
-    return this.userToView(userOutput);
+    return UsersController.userToView(userOutput);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

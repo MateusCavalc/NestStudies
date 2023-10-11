@@ -60,8 +60,9 @@ export class UsersController {
   @Get()
   async findSome(@Query() searchParams: ListUsersDto) {
     const paginationOutput = await this.listUsersUseCase.execute(searchParams);
+    paginationOutput.items.map(item => this.userToView(item));
 
-    return paginationOutput.items.map(item => this.userToView(item));
+    return paginationOutput;
   }
 
   @Get(':id')

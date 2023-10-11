@@ -1,7 +1,6 @@
 import { PaginationOutput } from '@/shared/application/dtos/pagination-output';
 import { UserEntity, UserProps } from '@/users/domain/entities/user.entity';
 import { UserDataBuilder } from '@/users/domain/entities/__tests__/helpers/user-data-builder';
-import { instanceToPlain } from 'class-transformer';
 import { PaginationView } from '../../pagination.presenter';
 
 type StubOutput = {
@@ -16,8 +15,8 @@ class StubPaginationView extends PaginationView<StubOutput> {
 }
 
 describe('PaginationView Unit Tests', () => {
-    let userProps : UserProps
-    let entity : UserEntity
+    let userProps: UserProps
+    let entity: UserEntity
 
     beforeAll(async () => {
         userProps = await UserDataBuilder({});

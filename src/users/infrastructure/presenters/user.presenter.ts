@@ -1,7 +1,7 @@
 import { PaginationOutput } from "@/shared/application/dtos/pagination-output"
 import { UserOutput } from "@/users/application/dtos/user-output"
 import { Exclude, Transform } from "class-transformer"
-import { PaginationView } from "./pagination.presenter"
+import { PaginationView } from "../../../shared/infrastructure/presenters/pagination.presenter"
 
 export class UserView {
     id: string

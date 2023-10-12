@@ -184,15 +184,13 @@ describe('Users e2e tests', () => {
 
             const res = await request(app.getHttpServer())
                 .post('/users')
-                .send(signUpDto);
-
-            expect(res.statusCode).toBe(409);
-
-            expect(Object.keys(res.body)).toContain('message');
-            expect(res.body['message']).toStrictEqual('User with email a@a.com already exists');
-
-            expect(Object.keys(res.body)).toContain('error');
-            expect(res.body['error']).toStrictEqual('Conflict');
+                .send(signUpDto)
+                .expect(409)
+                .expect({
+                    statusCode: 409,
+                    error: 'Conflict',
+                    message: `User with email ${signUpDto.email} already exists`
+                });
 
         });
 

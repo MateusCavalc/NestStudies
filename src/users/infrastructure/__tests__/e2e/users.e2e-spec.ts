@@ -11,6 +11,7 @@ import request from "supertest"
 import { UsersController } from "../../users.controller";
 import { instanceToPlain } from "class-transformer";
 import { applyGlobalConfig } from "@/global-config";
+import { UserEntity, UserProps } from "@/users/domain/entities/user.entity";
 
 describe('Users e2e tests', () => {
     let prismaService = new PrismaClient()
@@ -174,6 +175,24 @@ describe('Users e2e tests', () => {
 
             expect(Object.keys(res.body)).toContain('error');
             expect(res.body['error']).toStrictEqual('Unprocessable Entity');
+
+        });
+
+        it('Should receive error (409) when trying to sign up existing email', async () => {
+            const entity = new UserEntity({ ...signUpDto } as UserProps);
+            await repository.insert(entity);
+
+            const res = await request(app.getHttpServer())
+                .post('/users')
+                .send(signUpDto);
+
+            expect(res.statusCode).toBe(409);
+
+            expect(Object.keys(res.body)).toContain('message');
+            expect(res.body['message']).toStrictEqual('User with email a@a.com already exists');
+
+            expect(Object.keys(res.body)).toContain('error');
+            expect(res.body['error']).toStrictEqual('Conflict');
 
         });
 

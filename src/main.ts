@@ -9,6 +9,7 @@ import {
 
 import { execSync } from 'child_process';
 import { Logger, ValidationPipe } from '@nestjs/common';
+import { applyGlobalConfig } from './global-config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -25,7 +26,7 @@ async function bootstrap() {
     Logger.log("Migrations were applied.", 'BootStrap');
   }
 
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  applyGlobalConfig(app);
 
   // '0.0.0.0' to accept connection from other hosts.
   await app.listen(3000, '0.0.0.0');

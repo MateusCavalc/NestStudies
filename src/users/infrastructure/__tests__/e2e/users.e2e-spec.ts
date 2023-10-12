@@ -17,16 +17,10 @@ describe('Users e2e tests', () => {
     let app: INestApplication
     let module: TestingModule
     let repository: UserRepository.Repository
-    let signUpDto: SignUpDto
+
 
     beforeAll(async () => {
         execSync("npx dotenv -e .env.test -- npx prisma migrate deploy --schema ./src/shared/infrastructure/database/prisma/schema.prisma");
-
-        signUpDto = {
-            name: 'test name',
-            email: 'a@a.com',
-            password: '12345678'
-        };
 
         module = await Test.createTestingModule({
             imports: [
@@ -49,6 +43,16 @@ describe('Users e2e tests', () => {
     });
 
     describe('POST /users', () => {
+        let signUpDto: SignUpDto
+
+        beforeEach(async () => {
+            signUpDto = {
+                name: 'test name',
+                email: 'a@a.com',
+                password: '12345678'
+            };
+        });
+
         it('Should create a user', async () => {
             const res = await request(app.getHttpServer())
                 .post('/users')
@@ -70,6 +74,107 @@ describe('Users e2e tests', () => {
                     )
                 )
             );
+        });
+
+        it('Should receive error (422) when passing no parameters to the route', async () => {
+            const res = await request(app.getHttpServer())
+                .post('/users')
+                .send({});
+
+            expect(res.statusCode).toBe(422);
+
+            expect(Object.keys(res.body)).toContain('message');
+            expect(res.body['message']).toStrictEqual([
+                'name should not be empty',
+                'name must be a string',
+                'email should not be empty',
+                'email must be an email',
+                'email must be a string',
+                'password should not be empty',
+                'password must be a string'
+            ]);
+
+            expect(Object.keys(res.body)).toContain('error');
+            expect(res.body['error']).toStrictEqual('Unprocessable Entity');
+
+        });
+
+        it('Should receive error (422) when passing wrong name parameter to the route', async () => {
+            delete signUpDto.name;
+
+            const res = await request(app.getHttpServer())
+                .post('/users')
+                .send(signUpDto);
+
+            expect(res.statusCode).toBe(422);
+
+            expect(Object.keys(res.body)).toContain('message');
+            expect(res.body['message']).toStrictEqual([
+                'name should not be empty',
+                'name must be a string'
+            ]);
+
+            expect(Object.keys(res.body)).toContain('error');
+            expect(res.body['error']).toStrictEqual('Unprocessable Entity');
+
+        });
+
+        it('Should receive error (422) when passing wrong email parameter to the route', async () => {
+            delete signUpDto.email;
+
+            const res = await request(app.getHttpServer())
+                .post('/users')
+                .send(signUpDto);
+
+            expect(res.statusCode).toBe(422);
+
+            expect(Object.keys(res.body)).toContain('message');
+            expect(res.body['message']).toStrictEqual([
+                'email should not be empty',
+                'email must be an email',
+                'email must be a string'
+            ]);
+
+            expect(Object.keys(res.body)).toContain('error');
+            expect(res.body['error']).toStrictEqual('Unprocessable Entity');
+
+        });
+
+        it('Should receive error (422) when passing wrong password parameter to the route', async () => {
+            delete signUpDto.password;
+
+            const res = await request(app.getHttpServer())
+                .post('/users')
+                .send(signUpDto);
+
+            expect(res.statusCode).toBe(422);
+
+            expect(Object.keys(res.body)).toContain('message');
+            expect(res.body['message']).toStrictEqual([
+                'password should not be empty',
+                'password must be a string'
+            ]);
+
+            expect(Object.keys(res.body)).toContain('error');
+            expect(res.body['error']).toStrictEqual('Unprocessable Entity');
+
+        });
+
+        it('Should receive error (422) when passing not expected parameter to the route', async () => {
+            const res = await request(app.getHttpServer())
+                .post('/users')
+                .send(Object.assign(signUpDto, { notExpected: 'some not expected field' }));
+
+            expect(res.statusCode).toBe(422);
+
+            expect(Object.keys(res.body)).toContain('message');
+            expect(res.body['message']).toStrictEqual([
+                'property notExpected should not exist'
+            ]);
+
+            expect(Object.keys(res.body)).toContain('error');
+            expect(res.body['error']).toStrictEqual('Unprocessable Entity');
+
         });
 
     });

@@ -1,5 +1,8 @@
 import { INestApplication, ValidationPipe } from "@nestjs/common";
-import { ConflictErrorFilter } from "./shared/infrastructure/exception-filters/conflict-error/conflict-error.filter";
+import { AuthenticationErrorFilter } from "./shared/infrastructure/exception-filters/bad-auth.filter";
+import { ConflictErrorFilter } from "./shared/infrastructure/exception-filters/conflict-error.filter";
+import { InvalidPasswordErrorFilter } from "./shared/infrastructure/exception-filters/invalid-password";
+import { NotFoundErrorFilter } from "./shared/infrastructure/exception-filters/not-found.filter";
 
 export function applyGlobalConfig(app: INestApplication) {
     app.useGlobalPipes(new ValidationPipe(
@@ -11,5 +14,10 @@ export function applyGlobalConfig(app: INestApplication) {
         }
     ));
 
-    app.useGlobalFilters(new ConflictErrorFilter());
+    app.useGlobalFilters(
+        new ConflictErrorFilter(),
+        new NotFoundErrorFilter(),
+        new AuthenticationErrorFilter(),
+        new InvalidPasswordErrorFilter()
+    );
 }

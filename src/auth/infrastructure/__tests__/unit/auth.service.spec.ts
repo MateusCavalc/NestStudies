@@ -22,13 +22,13 @@ describe('AuthService unit tests', () => {
   });
 
   it('Should generate a JWT', async () => {
-    const result = await authService.generateJwt('fakeId');
+    const result = await authService.generateJwt({ id: 'fakeId' });
 
     expect(typeof result).toEqual('string');
   });
 
   it('Should verify a JWT', async () => {
-    const result = await authService.generateJwt('fakeId');
+    const result = await authService.generateJwt({ id: 'fakeId' });
 
     await expect(authService.verifyJwt(result))
       .resolves.not.toThrowError();

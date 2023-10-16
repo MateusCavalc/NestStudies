@@ -9,8 +9,8 @@ export class AuthService {
         private configService: EnvConfService
     ) { }
 
-    async generateJwt(userId: string): Promise<string> {
-        const token = await this.jwtService.signAsync(userId, {
+    async generateJwt(payload: object): Promise<string> {
+        const token = await this.jwtService.signAsync(payload, {
             secret: this.configService.getJwtSecret()
         });
         return token;

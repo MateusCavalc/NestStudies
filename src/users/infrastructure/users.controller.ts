@@ -14,6 +14,7 @@ import { ListUsersDto } from './dtos/list-users.dto';
 import { UserOutput } from '../application/dtos/user-output';
 import { UserPaginationView, UserView } from './presenters/user.presenter';
 import { PaginationOutput } from '@/shared/application/dtos/pagination-output';
+import { AuthService } from '@/auth/infrastructure/auth.service';
 
 @Controller('users')
 export class UsersController {
@@ -38,6 +39,9 @@ export class UsersController {
   @Inject(DeleteUserUseCase.UseCase)
   private deleteUserUseCase: DeleteUserUseCase.UseCase
 
+  @Inject(AuthService)
+  private authService: AuthService
+
   static userToView(output: UserOutput) {
     return new UserView(output);
   }
@@ -58,8 +62,9 @@ export class UsersController {
   @Post('auth')
   async signin(@Body() signInDto: SignInDto) {
     const userOutput = await this.signInUseCase.execute(signInDto);
-
-    return UsersController.userToView(userOutput);
+    return {
+      token: await this.authService.generateJwt({ id: userOutput.id })
+    };
   }
 
   @Get()

@@ -17,6 +17,10 @@ import { HashProvider } from "@/shared/application/providers/hash-provider";
 import { BcryptHashProvider } from "../../providers/bcrypt-hash.provider";
 import { UpdateUserDto } from "../../dtos/update-user.dto";
 import { UpdatePasswordDto } from "../../dtos/update-password.dto";
+import { AuthService } from "@/auth/infrastructure/auth.service";
+import { JwtService } from "@nestjs/jwt";
+import { EnvConfService } from "@/shared/infrastructure/env-conf/env-conf.service";
+import { ConfigService } from "@nestjs/config";
 
 describe('Users e2e tests', () => {
     let prismaService = new PrismaClient()
@@ -202,7 +206,11 @@ describe('Users e2e tests', () => {
     describe('POST /users/auth', () => {
         let signInDto: SignInDto
         let props: UserProps
-        let hashProvider : HashProvider
+        let hashProvider: HashProvider
+        let jwtService: JwtService
+        let envConfigService: EnvConfService
+        let configService: ConfigService
+        let authService: AuthService
 
         beforeAll(async () => {
             hashProvider = new BcryptHashProvider();
@@ -212,6 +220,19 @@ describe('Users e2e tests', () => {
                 email: 'b@b.com',
                 password: await hashProvider.generateHash('12345678'),
             };
+
+            configService = new ConfigService();
+            envConfigService = new EnvConfService(configService);
+
+            jwtService = new JwtService({
+                global: true,
+                secret: envConfigService.getJwtSecret(),
+                signOptions: {
+                    expiresIn: envConfigService.getJwtExpiresInSeconds()
+                }
+            });
+
+            authService = new AuthService(jwtService, envConfigService);
 
             const entity = new UserEntity(props);
             await repository.insert(entity);
@@ -231,20 +252,11 @@ describe('Users e2e tests', () => {
 
             expect(res.statusCode).toBe(HttpStatus.OK);
 
-            expect(Object.keys(res.body)).toContain('id');
-            expect(Object.keys(res.body)).toContain('name');
-            expect(Object.keys(res.body)).toContain('email');
-            expect(Object.keys(res.body)).toContain('createdAt');
+            expect(Object.keys(res.body)).toStrictEqual(['token']);
+            expect(typeof res.body['token']).toStrictEqual('string');
 
-            const user = await repository.findById(res.body.id);
-
-            expect(res.body).toStrictEqual(
-                instanceToPlain(
-                    UsersController.userToView(
-                        user.toJSON()
-                    )
-                )
-            );
+            await expect(authService.verifyJwt(res.body['token']))
+                .resolves.not.toThrow();
         });
 
         it('Should receive error (422) when passing no parameters to the route', async () => {
@@ -312,16 +324,16 @@ describe('Users e2e tests', () => {
         it('Should receive error (401) when trying to authenticate with wrong password', async () => {
 
             signInDto.password = 'wrong_one';
-            
+
             await request(app.getHttpServer())
-            .post('/users/auth')
-            .send(signInDto)
-            .expect(HttpStatus.UNAUTHORIZED)
-            .expect({
-                statusCode: HttpStatus.UNAUTHORIZED,
-                error: 'Unauthorized',
-                message: 'Password does not match'
-            });
+                .post('/users/auth')
+                .send(signInDto)
+                .expect(HttpStatus.UNAUTHORIZED)
+                .expect({
+                    statusCode: HttpStatus.UNAUTHORIZED,
+                    error: 'Unauthorized',
+                    message: 'Password does not match'
+                });
 
         });
 
@@ -329,14 +341,14 @@ describe('Users e2e tests', () => {
             await prismaService.user.deleteMany();
 
             await request(app.getHttpServer())
-            .post('/users/auth')
-            .send(signInDto)
-            .expect(HttpStatus.NOT_FOUND)
-            .expect({
-                statusCode: HttpStatus.NOT_FOUND,
-                error: 'NotFound',
-                message: `Could not found user with email ${signInDto.email}`
-            });
+                .post('/users/auth')
+                .send(signInDto)
+                .expect(HttpStatus.NOT_FOUND)
+                .expect({
+                    statusCode: HttpStatus.NOT_FOUND,
+                    error: 'NotFound',
+                    message: `Could not found user with email ${signInDto.email}`
+                });
 
         });
 
@@ -430,14 +442,14 @@ describe('Users e2e tests', () => {
             await prismaService.user.deleteMany();
 
             await request(app.getHttpServer())
-            .put(`/users/${entity.id}`)
-            .send(updateUserDto)
-            .expect(HttpStatus.NOT_FOUND)
-            .expect({
-                statusCode: HttpStatus.NOT_FOUND,
-                error: 'NotFound',
-                message: `Could not found user with id ${entity.id}`
-            });
+                .put(`/users/${entity.id}`)
+                .send(updateUserDto)
+                .expect(HttpStatus.NOT_FOUND)
+                .expect({
+                    statusCode: HttpStatus.NOT_FOUND,
+                    error: 'NotFound',
+                    message: `Could not found user with id ${entity.id}`
+                });
 
         });
 
@@ -484,13 +496,13 @@ describe('Users e2e tests', () => {
             await prismaService.user.deleteMany();
 
             await request(app.getHttpServer())
-            .get(`/users/${entity.id}`)
-            .expect(HttpStatus.NOT_FOUND)
-            .expect({
-                statusCode: HttpStatus.NOT_FOUND,
-                error: 'NotFound',
-                message: `Could not found user with id ${entity.id}`
-            });
+                .get(`/users/${entity.id}`)
+                .expect(HttpStatus.NOT_FOUND)
+                .expect({
+                    statusCode: HttpStatus.NOT_FOUND,
+                    error: 'NotFound',
+                    message: `Could not found user with id ${entity.id}`
+                });
 
         });
 
@@ -524,13 +536,13 @@ describe('Users e2e tests', () => {
             await prismaService.user.deleteMany();
 
             await request(app.getHttpServer())
-            .delete(`/users/${entity.id}`)
-            .expect(HttpStatus.NOT_FOUND)
-            .expect({
-                statusCode: HttpStatus.NOT_FOUND,
-                error: 'NotFound',
-                message: `Could not found user with id ${entity.id}`
-            });
+                .delete(`/users/${entity.id}`)
+                .expect(HttpStatus.NOT_FOUND)
+                .expect({
+                    statusCode: HttpStatus.NOT_FOUND,
+                    error: 'NotFound',
+                    message: `Could not found user with id ${entity.id}`
+                });
 
         });
 
@@ -650,14 +662,14 @@ describe('Users e2e tests', () => {
             updatePasswordDto.oldPassword = 'wrong-password'
 
             await request(app.getHttpServer())
-            .patch(`/users/password/${entity.id}`)
-            .send(updatePasswordDto)
-            .expect(HttpStatus.UNAUTHORIZED)
-            .expect({
-                statusCode: HttpStatus.UNAUTHORIZED,
-                error: 'Unauthorized',
-                message: `Old password does not match`
-            });
+                .patch(`/users/password/${entity.id}`)
+                .send(updatePasswordDto)
+                .expect(HttpStatus.UNAUTHORIZED)
+                .expect({
+                    statusCode: HttpStatus.UNAUTHORIZED,
+                    error: 'Unauthorized',
+                    message: `Old password does not match`
+                });
 
         });
 
@@ -665,14 +677,14 @@ describe('Users e2e tests', () => {
             await prismaService.user.deleteMany();
 
             await request(app.getHttpServer())
-            .patch(`/users/password/${entity.id}`)
-            .send(updatePasswordDto)
-            .expect(HttpStatus.NOT_FOUND)
-            .expect({
-                statusCode: HttpStatus.NOT_FOUND,
-                error: 'NotFound',
-                message: `Could not found user with id ${entity.id}`
-            });
+                .patch(`/users/password/${entity.id}`)
+                .send(updatePasswordDto)
+                .expect(HttpStatus.NOT_FOUND)
+                .expect({
+                    statusCode: HttpStatus.NOT_FOUND,
+                    error: 'NotFound',
+                    message: `Could not found user with id ${entity.id}`
+                });
 
         });
 

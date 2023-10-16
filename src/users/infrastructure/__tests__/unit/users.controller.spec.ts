@@ -35,7 +35,7 @@ describe('UsersController', () => {
 
     controller['signUpUseCase'] = mockSignUpUseCase as any;
 
-    const signUpParams : SignUpDto = {
+    const signUpParams: SignUpDto = {
       name: userProps.name,
       email: userProps.email,
       password: userProps.password
@@ -50,22 +50,28 @@ describe('UsersController', () => {
   });
 
   it('Should sign in with user credentials', async () => {
+    const tokenOutput = 'fake-token';
+
     const mockSignInUseCase = {
-      execute: jest.fn().mockReturnValue(Promise.resolve(user.toJSON()))
+      execute: jest.fn().mockReturnValue(Promise.resolve({ token: tokenOutput }))
+    };
+
+    const mockAuthService = {
+      generateJwt: jest.fn().mockReturnValue(Promise.resolve(tokenOutput))
     };
 
     controller['signInUseCase'] = mockSignInUseCase as any;
+    controller['authService'] = mockAuthService as any;
 
-    const signInParams : SignInDto = {
+    const signInParams: SignInDto = {
       email: userProps.email,
       password: userProps.password
     }
 
     const result = await controller.signin(signInParams);
 
-    const userView = new UserView(user.toJSON() as UserOutput);
-
-    expect(result).toStrictEqual(userView);
+    expect(Object.keys(result)).toStrictEqual(['token']);
+    expect(result.token).toEqual(tokenOutput);
     expect(mockSignInUseCase.execute).toBeCalledWith(signInParams);
   });
 
@@ -78,12 +84,12 @@ describe('UsersController', () => {
 
     controller['updateUserUseCase'] = mockUpdateUserUseCase as any;
 
-    const updateParams : UpdateUserDto = {
+    const updateParams: UpdateUserDto = {
       name: 'Novo nome para o Mateus'
     }
 
     const result = await controller.update(user.id, updateParams);
-    
+
     const userView = new UserView(user.toJSON() as UserOutput);
 
     expect(result).toStrictEqual(userView);
@@ -104,7 +110,7 @@ describe('UsersController', () => {
 
     controller['updatePasswordUseCase'] = mockUpdatePasswordUseCase as any;
 
-    const updatePasswordParams : UpdatePasswordDto = {
+    const updatePasswordParams: UpdatePasswordDto = {
       oldPassword: userProps.password,
       newPassword: 'novaSenha123'
     }
@@ -156,7 +162,7 @@ describe('UsersController', () => {
 
     controller['listUsersUseCase'] = mockListUsersUseCase as any;
 
-    const listUsersParams : ListUsersDto = {
+    const listUsersParams: ListUsersDto = {
       page: 1,
       perPage: 1,
     }

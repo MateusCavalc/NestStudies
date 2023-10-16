@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Inject, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Inject, HttpCode, HttpStatus, Query, UseGuards } from '@nestjs/common';
 import { SignUpDto } from './dtos/sign-up.dto';
 import { SignInDto } from './dtos/sign-in.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -15,6 +15,7 @@ import { UserOutput } from '../application/dtos/user-output';
 import { UserPaginationView, UserView } from './presenters/user.presenter';
 import { PaginationOutput } from '@/shared/application/dtos/pagination-output';
 import { AuthService } from '@/auth/infrastructure/auth.service';
+import { AuthGuard } from '@/auth/infrastructure/auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -67,6 +68,7 @@ export class UsersController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   async findSome(@Query() searchParams: ListUsersDto) {
     const paginationOutput = await this.listUsersUseCase.execute(searchParams);
@@ -74,6 +76,7 @@ export class UsersController {
     return UsersController.paginationToView(paginationOutput);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const userOutput = await this.getUserUseCase.execute({ id });
@@ -81,6 +84,7 @@ export class UsersController {
     return UsersController.userToView(userOutput);
   }
 
+  @UseGuards(AuthGuard)
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -96,6 +100,7 @@ export class UsersController {
     return UsersController.userToView(userOutput);
   }
 
+  @UseGuards(AuthGuard)
   @Patch('password/:id')
   async updatePassword(
     @Param('id') id: string,
@@ -111,6 +116,7 @@ export class UsersController {
     return UsersController.userToView(userOutput);
   }
 
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async remove(@Param('id') id: string) {

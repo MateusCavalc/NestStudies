@@ -27,10 +27,28 @@ describe('Users e2e tests', () => {
     let app: INestApplication
     let module: TestingModule
     let repository: UserRepository.Repository
-
+    let jwtService: JwtService
+    let envConfigService: EnvConfService
+    let configService: ConfigService
+    let authService: AuthService
+    let mockToken: string
 
     beforeAll(async () => {
         execSync("npx dotenv -e .env.test -- npx prisma migrate deploy --schema ./src/shared/infrastructure/database/prisma/schema.prisma");
+
+        configService = new ConfigService();
+        envConfigService = new EnvConfService(configService);
+
+        jwtService = new JwtService({
+            global: true,
+            secret: envConfigService.getJwtSecret(),
+            signOptions: {
+                expiresIn: envConfigService.getJwtExpiresInSeconds()
+            }
+        });
+
+        authService = new AuthService(jwtService, envConfigService);
+        mockToken = await authService.generateJwt({ id: 'fakeId' });
 
         module = await Test.createTestingModule({
             imports: [
@@ -207,10 +225,6 @@ describe('Users e2e tests', () => {
         let signInDto: SignInDto
         let props: UserProps
         let hashProvider: HashProvider
-        let jwtService: JwtService
-        let envConfigService: EnvConfService
-        let configService: ConfigService
-        let authService: AuthService
 
         beforeAll(async () => {
             hashProvider = new BcryptHashProvider();
@@ -220,19 +234,6 @@ describe('Users e2e tests', () => {
                 email: 'b@b.com',
                 password: await hashProvider.generateHash('12345678'),
             };
-
-            configService = new ConfigService();
-            envConfigService = new EnvConfService(configService);
-
-            jwtService = new JwtService({
-                global: true,
-                secret: envConfigService.getJwtSecret(),
-                signOptions: {
-                    expiresIn: envConfigService.getJwtExpiresInSeconds()
-                }
-            });
-
-            authService = new AuthService(jwtService, envConfigService);
 
             const entity = new UserEntity(props);
             await repository.insert(entity);
@@ -380,6 +381,7 @@ describe('Users e2e tests', () => {
         it('Should update a user', async () => {
             const res = await request(app.getHttpServer())
                 .put(`/users/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .send(updateUserDto);
 
             expect(res.statusCode).toBe(HttpStatus.OK);
@@ -403,6 +405,7 @@ describe('Users e2e tests', () => {
         it('Should receive error (422) when passing no parameters to the route', async () => {
             const res = await request(app.getHttpServer())
                 .put(`/users/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .send({});
 
             expect(res.statusCode).toBe(422);
@@ -423,6 +426,7 @@ describe('Users e2e tests', () => {
 
             const res = await request(app.getHttpServer())
                 .put(`/users/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .send(updateUserDto);
 
             expect(res.statusCode).toBe(422);
@@ -443,6 +447,7 @@ describe('Users e2e tests', () => {
 
             await request(app.getHttpServer())
                 .put(`/users/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .send(updateUserDto)
                 .expect(HttpStatus.NOT_FOUND)
                 .expect({
@@ -472,7 +477,8 @@ describe('Users e2e tests', () => {
 
         it('Should get a user', async () => {
             const res = await request(app.getHttpServer())
-                .get(`/users/${entity.id}`);
+                .get(`/users/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`);
 
             expect(res.statusCode).toBe(HttpStatus.OK);
 
@@ -497,6 +503,7 @@ describe('Users e2e tests', () => {
 
             await request(app.getHttpServer())
                 .get(`/users/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .expect(HttpStatus.NOT_FOUND)
                 .expect({
                     statusCode: HttpStatus.NOT_FOUND,
@@ -525,7 +532,8 @@ describe('Users e2e tests', () => {
 
         it('Should delete a user', async () => {
             const res = await request(app.getHttpServer())
-                .delete(`/users/${entity.id}`);
+                .delete(`/users/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`);
 
             expect(res.statusCode).toBe(HttpStatus.NO_CONTENT);
 
@@ -537,6 +545,7 @@ describe('Users e2e tests', () => {
 
             await request(app.getHttpServer())
                 .delete(`/users/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .expect(HttpStatus.NOT_FOUND)
                 .expect({
                     statusCode: HttpStatus.NOT_FOUND,
@@ -578,6 +587,7 @@ describe('Users e2e tests', () => {
         it('Should update user password', async () => {
             const res = await request(app.getHttpServer())
                 .patch(`/users/password/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .send(updatePasswordDto);
 
             expect(res.statusCode).toBe(HttpStatus.OK);
@@ -601,6 +611,7 @@ describe('Users e2e tests', () => {
         it('Should receive error (422) when passing no parameters to the route', async () => {
             const res = await request(app.getHttpServer())
                 .patch(`/users/password/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .send({});
 
             expect(res.statusCode).toBe(422);
@@ -623,6 +634,7 @@ describe('Users e2e tests', () => {
 
             const res = await request(app.getHttpServer())
                 .patch(`/users/password/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .send(updatePasswordDto);
 
             expect(res.statusCode).toBe(422);
@@ -643,6 +655,7 @@ describe('Users e2e tests', () => {
 
             const res = await request(app.getHttpServer())
                 .patch(`/users/password/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .send(updatePasswordDto);
 
             expect(res.statusCode).toBe(422);
@@ -663,6 +676,7 @@ describe('Users e2e tests', () => {
 
             await request(app.getHttpServer())
                 .patch(`/users/password/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .send(updatePasswordDto)
                 .expect(HttpStatus.UNAUTHORIZED)
                 .expect({
@@ -678,6 +692,7 @@ describe('Users e2e tests', () => {
 
             await request(app.getHttpServer())
                 .patch(`/users/password/${entity.id}`)
+                .set('Authorization', `Bearer ${mockToken}`)
                 .send(updatePasswordDto)
                 .expect(HttpStatus.NOT_FOUND)
                 .expect({

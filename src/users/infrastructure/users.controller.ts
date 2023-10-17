@@ -53,6 +53,14 @@ export class UsersController {
     return new UserPaginationView(paginationOutput);
   }
 
+  @ApiResponse({
+    status: 422,
+    description: 'Parâmetros errados ou mal formatados' 
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflito de e-mail' 
+  })
   @Post()
   async create(@Body() signUpDto: SignUpDto) {
     const userOutput = await this.signUpUseCase.execute(signUpDto);
@@ -61,6 +69,30 @@ export class UsersController {
 
   }
 
+  @ApiResponse({
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        token: {
+          type: 'string',
+          description: 'Token de acesso de usuário'
+        }
+      }
+    }
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'Parâmetros errados ou mal formatados' 
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado' 
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Acesso não autorizado' 
+  })
   @HttpCode(HttpStatus.OK)
   @Post('auth')
   async signin(@Body() signInDto: SignInDto) {
@@ -111,6 +143,15 @@ export class UsersController {
     return UsersController.paginationToView(paginationOutput);
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 401,
+    description: 'Acesso não autorizado' 
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado' 
+  })
   @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -119,6 +160,19 @@ export class UsersController {
     return UsersController.userToView(userOutput);
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 422,
+    description: 'Parâmetros errados ou mal formatados' 
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado' 
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Acesso não autorizado' 
+  })
   @UseGuards(AuthGuard)
   @Put(':id')
   async update(
@@ -135,6 +189,19 @@ export class UsersController {
     return UsersController.userToView(userOutput);
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 422,
+    description: 'Parâmetros errados ou mal formatados' 
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado' 
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Acesso não autorizado' 
+  })
   @UseGuards(AuthGuard)
   @Patch('password/:id')
   async updatePassword(
@@ -151,6 +218,15 @@ export class UsersController {
     return UsersController.userToView(userOutput);
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 401,
+    description: 'Acesso não autorizado' 
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado' 
+  })
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')

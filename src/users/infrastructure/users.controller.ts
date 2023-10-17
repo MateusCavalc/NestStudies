@@ -16,7 +16,9 @@ import { UserPaginationView, UserView } from './presenters/user.presenter';
 import { PaginationOutput } from '@/shared/application/dtos/pagination-output';
 import { AuthService } from '@/auth/infrastructure/auth.service';
 import { AuthGuard } from '@/auth/infrastructure/auth.guard';
+import { ApiBearerAuth, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   @Inject(SignUpUseCase.UseCase)
@@ -68,6 +70,39 @@ export class UsersController {
     };
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        total: {
+          type: 'number'
+        },
+        currentPage: {
+          type: 'number'
+        },
+        lastPage: {
+          type: 'number'
+        },
+        perPage: {
+          type: 'number'
+        },
+        items: {
+          type: 'array',
+          items: {$ref: getSchemaPath(UserView)}
+        },
+      }
+    }
+  })
+  @ApiResponse({
+    status: 422,
+    description: 'Parâmetros errados ou mal formatados' 
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Acesso não autorizado' 
+  })
   @UseGuards(AuthGuard)
   @Get()
   async findSome(@Query() searchParams: ListUsersDto) {
